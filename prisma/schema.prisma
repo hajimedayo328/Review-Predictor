@@ -1,0 +1,90 @@
+// Market Mirror - スキーマ定義
+// 100人のAIペルソナによる市場検証アプリ
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ========================================
+// 1. Idea (ビジネスアイデア)
+// ========================================
+model Idea {
+  id              Int      @id @default(autoincrement())
+  title           String   @db.VarChar(200)  // アイデアのタイトル
+  description     String   @db.Text          // 詳細説明
+  targetAudience  String   @db.VarChar(500)  // ターゲット層（例: 20-30代の働く女性）
+  category        String?  @db.VarChar(100)  // カテゴリ（例: BtoC, BtoB, SaaS）
+  expectedPrice   Decimal? @db.Decimal(10, 2) // 想定価格（円）
+  
+  // メタデータ
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // リレーション: 1つのIdeaは複数のReviewを持つ
+  reviews         Review[]
+  
+  @@map("ideas") // テーブル名を複数形に
+}
+
+// ========================================
+// 2. Persona (AIペルソナ定義)
+// ========================================
+model Persona {
+  id              Int      @id @default(autoincrement())
+  name            String   @db.VarChar(100)  // 名前（例: 田中 太郎）
+  age             Int                         // 年齢
+  gender          String   @db.VarChar(20)   // 性別
+  occupation      String   @db.VarChar(100)  // 職業
+  annualIncome    Int                         // 年収（万円）
+  personality     String   @db.Text          // 性格特性（例: 慎重派、革新的、保守的）
+  hobbies         String   @db.Text          // 趣味・興味関心
+  challenges      String   @db.Text          // 抱えている課題・悩み
+  buyingBehavior  String   @db.Text          // 購買行動の傾向
+  
+  // メタデータ
+  createdAt       DateTime @default(now())
+  
+  // リレーション: 1つのPersonaは複数のReviewを行う
+  reviews         Review[]
+  
+  @@map("personas")
+}
+
+// ========================================
+// 3. Review (評価・レビュー)
+// ========================================
+model Review {
+  id                    Int      @id @default(autoincrement())
+  
+  // 外部キー
+  ideaId                Int
+  personaId             Int
+  
+  // 評価内容
+  score                 Int                        // 評価スコア (1-5点)
+  comment               String   @db.Text          // 辛口コメント
+  willBuy               Boolean                    // 購入意欲 (Yes/No)
+  improvementSuggestion String   @db.Text          // 改善提案
+  
+  // 追加の詳細分析（オプション）
+  pricePerception       String?  @db.VarChar(50)  // 価格評価（高い/適正/安い）
+  trustLevel            Int?                       // 信頼度 (1-5点)
+  
+  // メタデータ
+  createdAt             DateTime @default(now())
+  
+  // リレーション定義
+  idea                  Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  persona               Persona  @relation(fields: [personaId], references: [id], onDelete: Cascade)
+  
+  // 同じIdeaに対して同じPersonaは1回のみレビュー可能
+  @@unique([ideaId, personaId])
+  @@index([ideaId])      // ideaIdでの検索を高速化
+  @@index([personaId])   // personaIdでの検索を高速化
+  @@map("reviews")
+}
