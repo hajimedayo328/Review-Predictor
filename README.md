@@ -439,3 +439,4 @@ docker exec -it finalapp-postgres-1 psql -U user -d market_mirror
 - [TRANSACTION_EXAMPLES.md](./TRANSACTION_EXAMPLES.md) - トランザクション実装例
 - [PDCA_SPECIFICATION.md](./PDCA_SPECIFICATION.md) - PDCAサイクル完全仕様
 - [PROPOSAL_MANAGEMENT.md](./PROPOSAL_MANAGEMENT.md) - 改善案管理機能
+- [EVALUATION_SYSTEM.md](./EVALUATION_SYSTEM.md) - 評価システム詳細設計
