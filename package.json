@@ -8,8 +8,8 @@
     "reset": "prisma migrate reset"
   },
   "dependencies": {
-    "@prisma/client": "^7.2.0",
-    "prisma": "^7.2.0"
+    "@prisma/client": "6.19.1",
+    "prisma": "6.19.1"
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
