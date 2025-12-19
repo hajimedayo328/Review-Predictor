@@ -9,7 +9,9 @@ Market Mirrorは、ビジネスアイデアを入力すると、異なる背景�
 ### 主な機能
 - ✨ ビジネスアイデアの入力・管理
 - 👥 3つのデッキ（30人）のペルソナによる多角的評価
+- 🔄 **PDCAサイクル機能** - 任意の回数アイデアを改善・再評価
 - 📊 統計情報の可視化
+- 📈 バージョン管理と改善履歴の追跡
 - 🎨 モダンで使いやすいUI
 
 ---
@@ -70,14 +72,44 @@ Market Mirrorは、ビジネスアイデアを入力すると、異なる背景�
    - スコア、コメント、購入意向、改善提案など
    - アイデアとペルソナの多対多の関係を管理
 
+### バージョン管理（PDCA機能）
+
+アイデアは自己参照リレーションでバージョン管理されています：
+
+- `version`: バージョン番号（1, 2, 3...）
+- `parentId`: 親アイデアへの参照（改善元）
+- `status`: ステータス（draft, improved）
+
+```
+Idea (parent) ← Idea (child) ← Idea (grandchild) ...
+  v1               v2               v3
+```
+
 ### リレーションシップ
 ```
 Idea (1) ←→ (多) Review (多) ←→ (1) Persona
+Idea (parent) ←→ (多) Idea (children)  # 自己参照
 ```
 
 - 外部キー制約によるデータ整合性の保証
 - カスケード削除の実装
 - ユニーク制約（1ペルソナ×1アイデア = 1レビュー）
+- 自己参照による階層構造（バージョン管理）
+
+---
+
+## 🔄 PDCA サイクル機能
+
+Market Mirrorの最大の特徴は、**任意の回数PDCAサイクルを回せる**ことです：
+
+1. **Plan（計画）** - アイデアを入力
+2. **Do（実行）** - ペルソナによる評価
+3. **Check（評価）** - レビュー結果を確認
+4. **Act（改善）** - フィードバックを元に改善版を作成
+
+→ 再び Plan に戻り、スコアが向上するまで繰り返す！
+
+詳細は [PDCA_FEATURE.md](./PDCA_FEATURE.md) を参照してください。
 
 ---
 
@@ -201,6 +233,13 @@ finalapp/
 - スコア、コメント、購入意向、改善提案を生成
 - 統計情報を自動集計
 
+### 4. PDCAサイクル
+- レポートページで「改善版を作成」ボタンをクリック
+- 改善提案を参考にアイデアを修正
+- 新しいバージョンとして保存
+- 再度ペルソナによる評価を受ける
+- 改善履歴をタイムラインで確認
+
 ---
 
 ## 📈 データベースクエリ例
@@ -278,8 +317,12 @@ docker exec -it finalapp-postgres-1 psql -U user -d market_mirror
 - [ ] OpenAI/Claude/Gemini APIの統合
 - [ ] ペルソナごとのAI評価生成
 - [ ] レビューの自動保存
+- [x] **PDCAサイクル機能** ✅
 
 ### Phase 2: 機能拡張
+- [x] **バージョン管理とPDCAサイクル** ✅
+- [x] **改善履歴の可視化** ✅
+- [ ] バージョン比較ビュー
 - [ ] レビューの編集・削除
 - [ ] アイデアの一覧表示
 - [ ] カテゴリ別の統計ダッシュボード
@@ -323,6 +366,11 @@ docker exec -it finalapp-postgres-1 psql -U user -d market_mirror
 - ✅ 外部キーインデックス
 - ✅ 複合ユニークインデックス
 
+### 6. 自己参照リレーション
+- ✅ 階層構造の実装（親子関係）
+- ✅ 再帰的データ取得
+- ✅ バージョン管理システム
+
 ---
 
 ## 🤝 コントリビューション
@@ -351,3 +399,4 @@ docker exec -it finalapp-postgres-1 psql -U user -d market_mirror
 - [PostgreSQL Documentation](https://www.postgresql.org/docs/)
 - [DATABASE_DESIGN.md](./DATABASE_DESIGN.md) - データベース設計詳細
 - [TRANSACTION_EXAMPLES.md](./TRANSACTION_EXAMPLES.md) - トランザクション実装例
+- [PDCA_FEATURE.md](./PDCA_FEATURE.md) - PDCAサイクル機能の詳細

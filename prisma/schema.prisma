@@ -17,10 +17,15 @@ model Idea {
   targetAudience String   @db.VarChar(500)
   category       String?  @db.VarChar(100)
   expectedPrice  Decimal? @db.Decimal(10, 2)
+  version        Int      @default(1)
+  parentId       Int?
+  status         String   @default("draft") @db.VarChar(50)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  reviews Review[]
+  reviews      Review[]
+  parent       Idea?    @relation("IdeaVersions", fields: [parentId], references: [id], onDelete: SetNull)
+  improvements Idea[]   @relation("IdeaVersions")
 
   @@map("ideas")
 }
