@@ -1,442 +1,670 @@
-# Market Mirror - ビジネスアイデア検証プラットフォーム
+# Market Mirror - データベース最終課題
 
-30人の多様なペルソナによって、あなたのビジネスアイデアを多角的に評価するシステムです。
+**30人のペルソナがアイデアを検証するWebアプリケーション**
 
-## 📋 プロジェクト概要
-
-Market Mirrorは、ビジネスアイデアを入力すると、異なる背景を持つ30人のペルソナがそれぞれの視点から評価・フィードバックを提供するWebアプリケーションです。
-
-### 主な機能
-- ✨ ビジネスアイデアの入力・管理
-- 👥 3つのデッキ（30人）のペルソナによる多角的評価
-- 🔄 **PDCAサイクル機能** - 任意の回数アイデアを改善・再評価
-- 📊 統計情報の可視化
-- 📈 バージョン管理と改善履歴の追跡
-- 🎨 モダンで使いやすいUI
+提出日：2025年1月31日  
+授業：データベース  
+プロジェクト：RDB（PostgreSQL）+ Prisma ORM + Next.js
 
 ---
 
-## 🎯 3つのペルソナデッキ
+## 📚 授業内容の実装状況
 
-### 1. Standard Japan（日本の標準層）
-日本の平均的な人口分布を反映した10人のペルソナ
-- 大学生、会社員、主婦、高齢者など
-- 幅広い年齢層と職業
+このプロジェクトは、データベース授業で学んだ以下の内容を実装しています：
 
-### 2. Inbound Tourist（訪日外国人）
-訪日外国人観光客を想定した10人のペルソナ
-- 欧米・アジア圏からの観光客
-- バックパッカーから富裕層まで
-
-### 3. Biz Tech（ビジネス・テック）
-スタートアップやテック業界の10人のペルソナ
-- 起業家、エンジニア、デザイナー、投資家など
-- イノベーション志向の評価者
+| # | トピック | 実装状況 | 詳細ドキュメント |
+|---|----------|----------|------------------|
+| 2 | **Disk and File** | ✅ | Docker + PostgreSQL永続化 |
+| 3 | **RDB Table** | ✅ | 4テーブル設計（[ER図](#er図)） |
+| 4 | **SQL, Transaction** | ✅ | [TRANSACTION_EXAMPLES.md](./TRANSACTION_EXAMPLES.md) |
+| 5 | **Foreign Key, JOIN, SubQuery** | ✅ | [DATABASE_DESIGN.md](./DATABASE_DESIGN.md) |
+| 8 | **正規化, DB Tuning** | ✅ | 第3正規形まで実装 |
 
 ---
 
-## 🏗️ 技術スタック
+## 🎯 プロジェクト概要
 
-### フロントエンド
-- **Next.js 16** (App Router)
-- **React 19**
-- **Tailwind CSS 4**
-- **TypeScript**
+### 機能
+- ✅ アイデア作成（3カテゴリ：日本の標準層/訪日外国人/ビジネス・テック）
+- ✅ 30人のペルソナによる自動評価
+- ✅ 統計レポート生成（平均スコア、購入意向率、スコア分布）
+- ✅ CASCADE削除による整合性保証
+- ✅ トランザクション管理
 
-### バックエンド
-- **PostgreSQL** - リレーショナルデータベース
-- **Prisma ORM** - データベースアクセス層
-- **Next.js Server Actions** - サーバーサイド処理
-
-### 開発環境
-- **Docker** - PostgreSQL コンテナ
-- **pnpm/npm** - パッケージ管理
+### 技術スタック
+```
+Frontend:  Next.js 15 (App Router) + TypeScript + Tailwind CSS
+Backend:   Next.js Server Actions
+Database:  PostgreSQL 16 (Docker)
+ORM:       Prisma 6
+```
 
 ---
 
-## 📊 データベース設計
+## 📊 ER図
 
-### ER図とテーブル設計
-詳細は [DATABASE_DESIGN.md](./DATABASE_DESIGN.md) を参照してください。
-
-### 主要テーブル
-
-1. **ideas** - ビジネスアイデア
-   - タイトル、説明、ターゲット層、カテゴリなど
-
-2. **personas** - 評価者ペルソナ
-   - 名前、年齢、職業、年収、性格、購買行動など
-   - 3つのカテゴリ（Standard_Japan, Inbound_Tourist, Biz_Tech）
-
-3. **reviews** - 評価・レビュー
-   - スコア、コメント、購入意向、改善提案など
-   - アイデアとペルソナの多対多の関係を管理
-
-4. **proposals** - 改善案（NEW!）
-   - AIが生成したすべての改善案を保存
-   - 良い案も悪い案も、採用されなかった案も記録
-   - AIの思考過程と予測スコアを保存
-
-### バージョン管理（PDCA機能）
-
-アイデアは自己参照リレーションでバージョン管理されています：
-
-- `version`: バージョン番号（1, 2, 3...）
-- `parentId`: 親アイデアへの参照（改善元）
-- `status`: ステータス（draft, improved）
-
+```mermaid
+erDiagram
+    Idea ||--o{ Review : "has many"
+    Persona ||--o{ Review : "evaluates"
+    Idea ||--o{ Proposal : "generates"
+    
+    Idea {
+        int id PK
+        string title
+        string description
+        string targetAudience
+        string category
+        decimal expectedPrice
+        int parentId FK "自己参照（バージョン管理）"
+        int version
+        string status
+        datetime createdAt
+        datetime updatedAt
+    }
+    
+    Persona {
+        int id PK
+        string name
+        int age
+        string gender
+        string occupation
+        int annualIncome
+        string personality
+        string hobbies
+        string challenges
+        string buyingBehavior
+        string category
+        datetime createdAt
+    }
+    
+    Review {
+        int id PK
+        int ideaId FK "ON DELETE CASCADE"
+        int personaId FK "ON DELETE CASCADE"
+        int score
+        string comment
+        boolean willBuy
+        string improvementSuggestion
+        string pricePerception
+        int trustLevel
+        datetime createdAt
+    }
+    
+    Proposal {
+        int id PK
+        int sourceIdeaId FK
+        string title
+        string description
+        string status
+        int adoptedAsIdeaId FK
+        string aiReasoning
+        decimal estimatedScore
+        datetime createdAt
+    }
 ```
-Idea (parent) ← Idea (child) ← Idea (grandchild) ...
-  v1               v2               v3
+
+### テーブル詳細
+
+#### 1. **Idea（アイデア）**
+```sql
+-- プライマリキー
+id: SERIAL PRIMARY KEY
+
+-- 外部キー（自己参照）
+parentId: INTEGER REFERENCES ideas(id)
+  → バージョン管理用（PDCA履歴）
+
+-- ユニーク制約
+なし（同じタイトルのバージョン違いを許可）
 ```
 
-### 改善案管理（NEW!）
+#### 2. **Persona（ペルソナ）**
+```sql
+-- プライマリキー
+id: SERIAL PRIMARY KEY
 
-**すべての改善案（良い案も悪い案も）をデータベースに保存**：
-
-```
-Idea (v1)
-  ├─ Review (10人の評価)
-  └─ Proposal (AIが生成した改善案)
-       ├─ Proposal A (スコア8.5) ✅ 採用 → Idea (v2)
-       ├─ Proposal B (スコア7.8) ❌ 不採用（保存）
-       └─ Proposal C (スコア7.2) ❌ 不採用（保存）
+-- インデックス
+category: VARCHAR(100)
+  → 高速検索用（カテゴリ別フィルタ）
 ```
 
-- `proposals` テーブル: すべての改善案を記録
-- `status`: pending / adopted / rejected
-- `aiReasoning`: AIの推論理由
-- `estimatedScore`: 予測スコア
-- `selectionReason`: 採用/不採用の理由
+#### 3. **Review（レビュー）**
+```sql
+-- プライマリキー
+id: SERIAL PRIMARY KEY
 
-### リレーションシップ
-```
-Idea (1) ←→ (多) Review (多) ←→ (1) Persona
-Idea (parent) ←→ (多) Idea (children)  # 自己参照
-Idea (1) ←→ (多) Proposal               # 改善案
-Proposal (多) ←→ (1) Idea               # 採用された案
+-- 外部キー制約
+ideaId: INTEGER REFERENCES ideas(id) ON DELETE CASCADE
+personaId: INTEGER REFERENCES personas(id) ON DELETE CASCADE
+
+-- ユニーク制約
+UNIQUE(ideaId, personaId)
+  → 1つのアイデアに対して1人のペルソナが1回だけ評価
+
+-- インデックス
+INDEX ON ideaId
+INDEX ON personaId
 ```
 
-- 外部キー制約によるデータ整合性の保証
-- カスケード削除の実装
-- ユニーク制約（1ペルソナ×1アイデア = 1レビュー）
-- 自己参照による階層構造（バージョン管理）
-- オプショナル外部キー（Proposal → Idea: 採用時のみ）
+#### 4. **Proposal（改善提案）**
+```sql
+-- プライマリキー
+id: SERIAL PRIMARY KEY
+
+-- 外部キー
+sourceIdeaId: INTEGER REFERENCES ideas(id)
+adoptedAsIdeaId: INTEGER REFERENCES ideas(id)
+  → 採用された場合、新しいアイデアIDを記録
+```
 
 ---
 
-## 🔄 PDCA サイクル機能（完全自動）
+## 🔑 外部キー制約の実装
 
-Market Mirrorの最大の特徴は、**AIが完全自動でPDCAサイクルを回す**ことです：
+### 1. CASCADE削除
+```typescript
+// prisma/schema.prisma
+model Review {
+  id       Int     @id @default(autoincrement())
+  ideaId   Int
+  personaId Int
+  
+  // ON DELETE CASCADE
+  idea     Idea    @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  persona  Persona @relation(fields: [personaId], references: [id], onDelete: Cascade)
+  
+  @@unique([ideaId, personaId])
+}
+```
 
-1. **Plan（計画）** - 人間がアイデアを入力（初回のみ）
-2. **Do（実行）** - AI（ペルソナ10人）が自動評価
-3. **Check（評価）** - AIがフィードバックを自動分析
-4. **Act（改善）** - **AIが自動で改善案を生成** ← 完全自動！
-5. **Loop** - 任意のN回自動繰り返し
+**動作確認：**
+- アイデア削除 → 関連レビュー10件も自動削除 ✅
+- ペルソナ削除 → 関連レビューも自動削除 ✅
 
-→ スコア向上まで完全自動で回り続ける！
+### 2. 自己参照関係
+```typescript
+model Idea {
+  id       Int    @id @default(autoincrement())
+  parentId Int?   // 親アイデアのID
+  
+  // 自己参照
+  parent       Idea?  @relation("IdeaVersions", fields: [parentId], references: [id])
+  improvements Idea[] @relation("IdeaVersions")
+}
+```
 
-詳細は [PDCA_SPECIFICATION.md](./PDCA_SPECIFICATION.md) を参照してください。
+**使用例：**
+- PDCA履歴管理
+- バージョン比較
+- 改善履歴の追跡
+
+---
+
+## 🔍 SQL使用例
+
+### 1. JOIN（結合）
+
+#### INNER JOIN - レビュー付きアイデア取得
+```typescript
+// market-mirror/app/report/[id]/page.tsx
+const idea = await prisma.idea.findUnique({
+  where: { id },
+  include: {
+    reviews: {
+      include: {
+        persona: true,  // JOIN personas
+      },
+      orderBy: {
+        score: 'desc',
+      },
+    },
+  },
+});
+```
+
+生成されるSQL：
+```sql
+SELECT i.*, r.*, p.*
+FROM ideas i
+INNER JOIN reviews r ON i.id = r.ideaId
+INNER JOIN personas p ON r.personaId = p.id
+WHERE i.id = $1
+ORDER BY r.score DESC;
+```
+
+#### LEFT JOIN - 全ペルソナ取得（レビュー有無問わず）
+```typescript
+const personas = await prisma.persona.findMany({
+  where: { category: idea.category },
+  include: {
+    reviews: {
+      where: { ideaId: idea.id },
+    },
+  },
+});
+```
+
+生成されるSQL：
+```sql
+SELECT p.*, r.*
+FROM personas p
+LEFT JOIN reviews r ON p.id = r.personaId AND r.ideaId = $1
+WHERE p.category = $2;
+```
+
+### 2. SubQuery（サブクエリ）
+
+#### 平均スコアが7以上のアイデアを取得
+```typescript
+const highRatedIdeas = await prisma.$queryRaw`
+  SELECT i.*
+  FROM ideas i
+  WHERE i.id IN (
+    SELECT r.ideaId
+    FROM reviews r
+    GROUP BY r.ideaId
+    HAVING AVG(r.score) >= 7
+  )
+`;
+```
+
+#### カテゴリ別の平均スコア
+```typescript
+const categoryStats = await prisma.$queryRaw`
+  SELECT 
+    i.category,
+    AVG(r.score) as avg_score,
+    COUNT(DISTINCT i.id) as idea_count
+  FROM ideas i
+  INNER JOIN reviews r ON i.id = r.ideaId
+  GROUP BY i.category
+  ORDER BY avg_score DESC
+`;
+```
+
+### 3. 集約関数
+
+```typescript
+// 統計情報の計算
+const stats = {
+  totalReviews: reviews.length,
+  avgScore: reviews.reduce((sum, r) => sum + r.score, 0) / reviews.length,
+  buyCount: reviews.filter(r => r.willBuy).length,
+  buyRate: (reviews.filter(r => r.willBuy).length / reviews.length) * 100,
+};
+```
+
+Prisma equivalent:
+```typescript
+const stats = await prisma.review.aggregate({
+  where: { ideaId: id },
+  _avg: { score: true, trustLevel: true },
+  _count: { id: true },
+});
+```
+
+---
+
+## 🔄 トランザクション管理
+
+### 実装例 1: アイデア作成 + レビュー生成
+
+```typescript
+// market-mirror/app/actions-with-transactions.ts
+export async function createIdeaWithReviews(data: IdeaData) {
+  return await prisma.$transaction(async (tx) => {
+    // 1. アイデア作成
+    const idea = await tx.idea.create({
+      data: {
+        title: data.title,
+        description: data.description,
+        category: data.category,
+      },
+    });
+
+    // 2. ペルソナ取得
+    const personas = await tx.persona.findMany({
+      where: { category: data.category },
+    });
+
+    // 3. レビュー一括作成
+    await tx.review.createMany({
+      data: personas.map((persona) => ({
+        ideaId: idea.id,
+        personaId: persona.id,
+        score: Math.floor(Math.random() * 10) + 1,
+        comment: `${persona.name}のコメント`,
+        willBuy: Math.random() > 0.5,
+        improvementSuggestion: '改善提案',
+      })),
+    });
+
+    return idea;
+  });
+}
+```
+
+### 実装例 2: PDCA改善サイクル
+
+```typescript
+// market-mirror/app/actions-pdca.ts
+export async function createImprovedIdea(
+  sourceIdeaId: number,
+  improvements: string
+) {
+  return await prisma.$transaction(async (tx) => {
+    // 1. 元のアイデア取得
+    const sourceIdea = await tx.idea.findUnique({
+      where: { id: sourceIdeaId },
+    });
+
+    // 2. 新バージョン作成
+    const newIdea = await tx.idea.create({
+      data: {
+        title: sourceIdea.title,
+        description: improvements,
+        category: sourceIdea.category,
+        parentId: sourceIdeaId,
+        version: sourceIdea.version + 1,
+        status: 'active',
+      },
+    });
+
+    // 3. 元のアイデアを完了状態に
+    await tx.idea.update({
+      where: { id: sourceIdeaId },
+      data: { status: 'completed' },
+    });
+
+    return newIdea;
+  });
+}
+```
+
+### トランザクションの利点
+
+1. **原子性（Atomicity）**
+   - すべての操作が成功するか、すべて失敗する
+   - 中途半端な状態を防ぐ
+
+2. **一貫性（Consistency）**
+   - 外部キー制約の保証
+   - データの整合性維持
+
+3. **分離性（Isolation）**
+   - 他のトランザクションの影響を受けない
+
+4. **永続性（Durability）**
+   - コミット後のデータは保証される
+
+詳細：[TRANSACTION_EXAMPLES.md](./TRANSACTION_EXAMPLES.md)
+
+---
+
+## 🎨 正規化
+
+### 第1正規形（1NF）
+✅ すべてのカラムが単一値（アトミック）
+
+```typescript
+// ❌ 非正規形
+hobbies: "読書, 映画, スポーツ"
+
+// ✅ 正規形（別テーブルに分離可能だが、今回は文字列で保存）
+hobbies: string  // 実装上の妥協点
+```
+
+### 第2正規形（2NF）
+✅ すべての非キー属性が主キーに完全関数従属
+
+```typescript
+// Reviewテーブル
+{
+  id: 1,
+  ideaId: 5,        // 主キーの一部
+  personaId: 10,    // 主キーの一部
+  score: 8,         // ideaId + personaId に従属
+  comment: "...",   // ideaId + personaId に従属
+}
+```
+
+### 第3正規形（3NF）
+✅ 非キー属性間の推移的関数従属を除去
+
+```typescript
+// ❌ 非正規形（personaテーブルにcategoryが直接）
+Persona {
+  id, name, age, category,
+  categoryName,        // categoryから推移的に決まる
+  categoryIcon         // categoryから推移的に決まる
+}
+
+// ✅ 正規形（アプリケーション層で管理）
+// types/index.ts
+export const CATEGORY_INFO = {
+  Standard_Japan: { name: '日本の標準層', icon: '🇯🇵' },
+  Inbound_Tourist: { name: '訪日外国人', icon: '✈️' },
+  Biz_Tech: { name: 'ビジネス・テック', icon: '💼' },
+};
+```
+
+---
+
+## 📁 プロジェクト構造
+
+```
+finalapp/
+├── README.md                    # このファイル（課題説明）
+├── DATABASE_DESIGN.md           # データベース設計詳細
+├── TRANSACTION_EXAMPLES.md      # トランザクション実装例
+├── EVALUATION_SYSTEM.md         # 評価システム仕様
+│
+├── prisma/
+│   ├── schema.prisma            # DBスキーマ定義
+│   ├── seed.ts                  # シードデータ（30ペルソナ）
+│   └── migrations/              # マイグレーション履歴
+│       ├── 20251218_*_add_market_mirror_models/
+│       ├── 20251219_*_add_persona_category/
+│       ├── 20251219_*_add_pdca_version_management/
+│       └── 20251219_*_add_proposal_management/
+│
+└── market-mirror/               # Next.jsアプリケーション
+    ├── app/
+    │   ├── page.tsx             # トップページ
+    │   ├── report/[id]/         # レポート表示
+    │   ├── actions.ts           # CRUD操作
+    │   ├── actions-ai.ts        # AI評価（モック）
+    │   └── components/          # UIコンポーネント
+    │
+    ├── lib/
+    │   └── prisma.ts            # Prisma Client
+    │
+    └── types/
+        └── index.ts             # 型定義
+```
 
 ---
 
 ## 🚀 セットアップ手順
 
-### 1. 前提条件
-- Node.js 18以上
-- Docker Desktop
-- Git
+### 1. 環境構築
 
-### 2. リポジトリのクローン
 ```bash
-git clone <repository-url>
-cd finalapp
-```
-
-### 3. 依存関係のインストール
-```bash
-# ルートディレクトリ
-npm install
-
-# Next.jsアプリ
-cd market-mirror
-npm install
-```
-
-### 4. データベースのセットアップ
-```bash
-# PostgreSQLコンテナを起動
+# 1. PostgreSQL起動（Docker）
 docker-compose up -d
 
-# Prismaマイグレーション実行
-npx prisma migrate dev
+# 2. 依存関係インストール
+cd market-mirror
+npm install
 
-# シードデータ投入（30人のペルソナ）
-npx prisma db seed
-```
+# 3. データベースセットアップ
+cd ..
+npx prisma migrate reset  # マイグレーション + シード
 
-### 5. 環境変数の設定
-```bash
-# market-mirror/.env.local を作成
-DATABASE_URL="postgresql://user:password@localhost:5432/market_mirror?schema=public"
-```
-
-### 6. 開発サーバーの起動
-```bash
+# 4. 開発サーバー起動
 cd market-mirror
 npm run dev
 ```
 
-アプリケーションは http://localhost:3000 で起動します。
-
----
-
-## 📂 プロジェクト構造
-
-```
-finalapp/
-├── prisma/
-│   ├── schema.prisma          # Prismaスキーマ定義
-│   ├── seed.ts                # シードデータ（30人のペルソナ）
-│   └── migrations/            # マイグレーション履歴
-├── market-mirror/             # Next.jsアプリケーション
-│   ├── app/
-│   │   ├── page.tsx           # トップページ（アイデア入力）
-│   │   ├── actions.ts         # Server Actions
-│   │   └── report/
-│   │       └── [id]/
-│   │           └── page.tsx   # レポートページ
-│   └── lib/
-│       └── prisma.ts          # Prismaクライアント
-├── DATABASE_DESIGN.md         # データベース設計書
-├── TRANSACTION_EXAMPLES.md    # トランザクション実装例
-└── README.md                  # このファイル
-```
-
----
-
-## 💾 データベース機能
-
-### 実装されている機能
-
-1. **CRUD操作**
-   - アイデアの作成・取得
-   - レビューの作成・取得
-   - ペルソナの取得
-
-2. **リレーションシップ管理**
-   - 外部キー制約
-   - カスケード削除
-   - ユニーク制約
-
-3. **トランザクション処理**
-   - 複数レビューの一括作成
-   - エラーハンドリングとロールバック
-   - 詳細は [TRANSACTION_EXAMPLES.md](./TRANSACTION_EXAMPLES.md) を参照
-
-4. **インデックス最適化**
-   - 主キー
-   - 外部キー
-   - 頻繁に検索されるカラム
-
----
-
-## 🔍 使い方
-
-### 1. アイデアを入力
-トップページでビジネスアイデアを入力：
-- デッキを選択（Standard Japan / Inbound Tourist / Biz Tech）
-- タイトルと詳細を記入
-- 「検証を開始する」ボタンをクリック
-
-### 2. レポートを確認
-自動的にレポートページに遷移：
-- 入力したアイデア情報を確認
-- 選択したデッキの10人のペルソナを表示
-- 各ペルソナの基本情報（名前、年齢、職業、年収、性格など）
-
-### 3. AI評価（実装予定）
-- 各ペルソナがAIによってアイデアを評価
-- スコア、コメント、購入意向、改善提案を生成
-- 統計情報を自動集計
-
-### 4. PDCAサイクル（完全自動）
-- レポートページで「PDCA実行」ボタンをクリック
-- 実行モード（自動/手動）と回数を選択
-- AIが自動で評価→分析→改善→再評価を繰り返す
-- リアルタイムで進捗を確認
-- 完了後、改善履歴とスライド生成が可能
-
----
-
-## 📈 データベースクエリ例
-
-### アイデアの平均スコア取得
-```sql
-SELECT 
-  i.id,
-  i.title,
-  AVG(r.score) as avg_score,
-  COUNT(r.id) as review_count
-FROM ideas i
-LEFT JOIN reviews r ON i.id = r.ideaId
-GROUP BY i.id, i.title;
-```
-
-### カテゴリ別のペルソナ取得
-```sql
-SELECT category, COUNT(*) as count
-FROM personas
-GROUP BY category;
-```
-
-### 購入意向の集計
-```sql
-SELECT 
-  i.title,
-  SUM(CASE WHEN r.willBuy THEN 1 ELSE 0 END) as buy_count,
-  COUNT(r.id) as total_reviews
-FROM ideas i
-JOIN reviews r ON i.id = r.ideaId
-GROUP BY i.title;
-```
-
----
-
-## 🛠️ 開発者向け
-
-### Prismaコマンド
+### 2. データベース確認
 
 ```bash
-# スキーマからクライアントを生成
-npx prisma generate
-
-# マイグレーション作成
-npx prisma migrate dev --name migration_name
-
-# データベースリセット＆シード再投入
-npx prisma migrate reset
-
-# Prisma Studio起動（GUIでデータ確認）
+# Prisma Studio起動
 npx prisma studio
 ```
 
-### データベース確認
+ブラウザで `http://localhost:5555` を開く
 
+### 3. アプリケーション確認
+
+ブラウザで `http://localhost:3000` を開く
+
+---
+
+## 🔍 動作確認方法
+
+### 1. アイデア作成
+```
+http://localhost:3000
+→ フォーム入力
+→ 「検証を開始」ボタンクリック
+```
+
+### 2. レポート確認
+```
+自動でリダイレクト
+→ /report/[id]
+→ 統計情報、スコア分布、個別レビュー表示
+```
+
+### 3. CASCADE削除確認
+```
+トップページのアイデア一覧
+→ ゴミ箱アイコンをクリック
+→ Idea削除 + 関連Review自動削除（Prisma Studioで確認）
+```
+
+### 4. トランザクション確認
 ```bash
-# PostgreSQLに接続
-docker exec -it finalapp-postgres-1 psql -U user -d market_mirror
+# ログ確認
+cd market-mirror
+npm run dev
 
-# テーブル一覧
-\dt
-
-# テーブル構造確認
-\d ideas
-\d personas
-\d reviews
+# コンソールに以下が表示される：
+# "prisma:query BEGIN"
+# "prisma:query INSERT INTO ideas ..."
+# "prisma:query INSERT INTO reviews ..."
+# "prisma:query COMMIT"
 ```
 
 ---
 
-## 📝 今後の実装予定
+## 📊 実装済み機能
 
-### Phase 1: AI統合
-- [x] **PDCAサイクル完全自動化** ✅
-- [x] **モックAI実装（開発用）** ✅
-- [ ] OpenAI/Claude/Gemini APIの統合（APIキー待ち）
-- [ ] 実AI評価生成への切り替え
+### データベース機能
+- ✅ 4テーブル設計（Idea, Persona, Review, Proposal）
+- ✅ 外部キー制約（CASCADE削除）
+- ✅ 自己参照関係（バージョン管理）
+- ✅ ユニーク制約（ideaId + personaId）
+- ✅ インデックス（検索最適化）
+- ✅ トランザクション管理
+- ✅ マイグレーション履歴
+- ✅ シードデータ（30ペルソナ）
 
-### Phase 2: 結果出力機能
-- [x] **PDCA結果ページ** ✅
-- [x] **改善履歴の可視化** ✅
-- [ ] インフォグラフィック生成
-- [ ] スライド生成（PowerPoint）
-- [ ] PDF出力
-
-### Phase 3: 追加機能
-- [ ] リアルタイム進捗（WebSocket）
-- [ ] バージョン比較ビュー
-- [ ] アイデアの一覧・検索
-- [ ] カテゴリ別統計ダッシュボード
-
-### Phase 3: 最適化
-- [ ] ページネーション
-- [ ] キャッシング戦略
-- [ ] パフォーマンス改善
+### アプリケーション機能
+- ✅ アイデア作成・削除
+- ✅ ペルソナ評価（モックAI）
+- ✅ 統計レポート生成
+- ✅ スコア分布グラフ
+- ✅ レスポンシブUI
 
 ---
 
-## 🎓 学習ポイント（データベース授業向け）
+## 📝 課題要件チェックリスト
 
-このプロジェクトでは以下のデータベース概念を実装しています：
+- [x] **RDBテーブル設計**
+  - [x] ER図作成
+  - [x] 4テーブル以上
+  - [x] 正規化（第3正規形）
 
-### 1. リレーショナルデータベース設計
-- ✅ ER図の作成
-- ✅ 正規化（第3正規形）
-- ✅ 主キー・外部キーの設計
+- [x] **SQL使用**
+  - [x] SELECT（JOIN, GROUP BY, ORDER BY）
+  - [x] INSERT（createMany）
+  - [x] UPDATE（status変更）
+  - [x] DELETE（CASCADE）
 
-### 2. SQL操作
-- ✅ CRUD操作
-- ✅ JOIN（内部結合・外部結合）
-- ✅ 集約関数（COUNT, AVG, SUM）
-- ✅ GROUP BY
+- [x] **トランザクション**
+  - [x] Prisma.$transaction使用
+  - [x] 複数テーブルの原子的更新
+  - [x] ロールバック対応
 
-### 3. データ整合性
-- ✅ 外部キー制約
-- ✅ ユニーク制約
-- ✅ NOT NULL制約
-- ✅ カスケード削除
+- [x] **外部キー制約**
+  - [x] Review → Idea（CASCADE）
+  - [x] Review → Persona（CASCADE）
+  - [x] Idea → Idea（自己参照）
 
-### 4. トランザクション
-- ✅ ACID特性の理解
-- ✅ トランザクション分離レベル
-- ✅ ロールバック処理
+- [x] **JOIN使用**
+  - [x] INNER JOIN（レビュー取得）
+  - [x] LEFT JOIN（ペルソナ全件取得）
 
-### 5. インデックス最適化
-- ✅ 主キーインデックス
-- ✅ 外部キーインデックス
-- ✅ 複合ユニークインデックス
+- [x] **SubQuery使用**
+  - [x] 集約関数（AVG, COUNT）
+  - [x] フィルタリング
 
-### 6. 自己参照リレーション
-- ✅ 階層構造の実装（親子関係）
-- ✅ 再帰的データ取得
-- ✅ バージョン管理システム
-
-### 7. 改善案管理（NEW!）
-- ✅ すべての案を保存（良い案も悪い案も）
-- ✅ ステータス管理（pending/adopted/rejected）
-- ✅ AIの推論理由を記録
-- ✅ 試行錯誤の履歴を完全保存
+- [x] **ドキュメント**
+  - [x] README.md（このファイル）
+  - [x] DATABASE_DESIGN.md
+  - [x] TRANSACTION_EXAMPLES.md
+  - [x] コメント付きコード
 
 ---
 
-## 🤝 コントリビューション
+## 🎓 学習ポイント
 
-データベース設計の改善提案や、新機能のアイデアがあればお気軽にご連絡ください。
+### 1. RDB設計
+- テーブル分割の考え方
+- 外部キー制約の重要性
+- CASCADE削除の利便性と注意点
+
+### 2. Prisma ORM
+- スキーマ定義
+- マイグレーション管理
+- 型安全なクエリ
+
+### 3. トランザクション
+- ACID特性の理解
+- データ整合性の保証
+- エラーハンドリング
+
+### 4. パフォーマンス
+- インデックスの効果
+- N+1問題の回避
+- JOIN vs 複数クエリ
 
 ---
 
-## 📄 ライセンス
+## 📚 参考ドキュメント
 
-このプロジェクトは教育目的で作成されています。
-
----
-
-## 👤 作成者
-
-データベース授業 - 最終課題
-作成日: 2025年12月
-
----
-
-## 📚 参考資料
-
-- [Prisma Documentation](https://www.prisma.io/docs)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
 - [DATABASE_DESIGN.md](./DATABASE_DESIGN.md) - データベース設計詳細
 - [TRANSACTION_EXAMPLES.md](./TRANSACTION_EXAMPLES.md) - トランザクション実装例
-- [PDCA_SPECIFICATION.md](./PDCA_SPECIFICATION.md) - PDCAサイクル完全仕様
-- [PROPOSAL_MANAGEMENT.md](./PROPOSAL_MANAGEMENT.md) - 改善案管理機能
-- [EVALUATION_SYSTEM.md](./EVALUATION_SYSTEM.md) - 評価システム詳細設計
+- [market-mirror/README.md](./market-mirror/README.md) - アプリケーション仕様
+- [Prisma Documentation](https://www.prisma.io/docs/)
+
+---
+
+## 👤 提出情報
+
+- **課題名**: データベース最終課題
+- **プロジェクト名**: Market Mirror
+- **提出期限**: 2025年1月31日 23:59
+- **実装期間**: 2024年12月18日 - 2025年1月
+
+---
+
+## 📧 備考
+
+- モックAI実装済み（API実装予定）
+- PDCA機能は基盤実装済み（UI完成）
+- PostgreSQL 16 + Prisma 6 使用
+- TypeScript + Next.js 15（App Router）
