@@ -1,27 +1,39 @@
 {
-  "name": "market-mirror-db",
+  "name": "review-predictor",
   "version": "1.0.0",
-  "description": "Market Mirror - Database Final Project",
+  "description": "Review Predictor - Database Final Project",
+  "private": true,
   "scripts": {
-    "demo": "tsx demo-setup.ts",
-    "studio": "prisma studio",
-    "reset": "prisma migrate reset",
-    "vector:setup": "tsx setup-vector.ts",
-    "vector:generate": "tsx generate-embeddings.ts",
-    "db:check": "tsx quick-restore.ts",
-    "db:restore": "npx prisma db seed && npm run demo && npm run vector:generate",
-    "pdca": "tsx quick-pdca.ts",
-    "pdca:run": "tsx run-pdca-cycle.ts"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:studio": "prisma studio",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.19.1",
-    "prisma": "6.19.1"
+    "@xenova/transformers": "^2.17.2",
+    "clsx": "^2.1.1",
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "recharts": "^3.6.0",
+    "tailwind-merge": "^2.5.0"
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
-    "dotenv": "^17.2.3",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.0",
+    "postcss": "^8.4.47",
+    "prisma": "^6.19.1",
+    "tailwindcss": "^3.4.13",
     "ts-node": "^10.9.2",
-    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
   "prisma": {

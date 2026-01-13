@@ -3,12 +3,12 @@ version: '3.8'
 services:
   postgres:
     image: pgvector/pgvector:pg16
-    container_name: market_mirror_db
+    container_name: review_predictor_db
     restart: always
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: market_mirror
+      POSTGRES_DB: review_predictor
     ports:
       - "5432:5432"
     volumes:
@@ -17,15 +17,4 @@ services:
 
 volumes:
   postgres_data:
-
-
-
-
-
-
-
-
-
-
-
 

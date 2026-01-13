@@ -1,136 +1,190 @@
-import { PrismaClient, Category } from '@prisma/client';
+// Review Predictor - Seed Data
+// 10,000人の仮想顧客プロファイルを生成
+
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
+// 正規分布でランダムな値を生成（Box-Muller変換）
+function normalRandom(mean: number = 0.5, stdDev: number = 0.2): number {
+  const u1 = Math.random();
+  const u2 = Math.random();
+  const z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+  let value = mean + z * stdDev;
+  // 0-1の範囲にクリップ
+  return Math.max(0, Math.min(1, value));
+}
+
+// 384次元のランダムベクトルを生成（正規化済み）
+function generateRandomVector(dimension: number): number[] {
+  const vector = Array.from({ length: dimension }, () => Math.random() - 0.5);
+  const norm = Math.sqrt(vector.reduce((sum, v) => sum + v * v, 0));
+  return vector.map(v => v / norm);
+}
+
+// 日本人の名前を生成
+function generateJapaneseName(index: number): string {
+  const lastNames = [
+    '佐藤', '鈴木', '高橋', '田中', '伊藤', '渡辺', '山本', '中村', '小林', '加藤',
+    '吉田', '山田', '佐々木', '山口', '松本', '井上', '木村', '林', '斎藤', '清水',
+    '山崎', '森', '池田', '橋本', '阿部', '石川', '山下', '中島', '石井', '小川',
+    '前田', '岡田', '長谷川', '藤田', '後藤', '近藤', '村上', '遠藤', '青木', '坂本',
+    '斉藤', '福田', '太田', '西村', '藤井', '金子', '岡本', '藤原', '三浦', '中野'
+  ];
+  const firstNames = [
+    '太郎', '花子', '一郎', '次郎', '三郎', '美咲', '陽菜', '葵', '結衣', '咲良',
+    '蓮', '湊', '大翔', '悠真', '樹', '陽向', '芽依', '凛', '杏', '紬',
+    '健太', '翔太', '拓也', '大輔', '雄太', '達也', '恵', '優子', '美香', '真由美'
+  ];
+
+  const lastName = lastNames[index % lastNames.length];
+  const firstName = firstNames[Math.floor(index / lastNames.length) % firstNames.length];
+  return `${lastName} ${firstName}`;
+}
+
+// セグメントごとのプロファイル傾向を定義
+const segmentProfiles = {
+  'Price Sensitive': { priceMean: 0.8, qualityMean: 0.3, designMean: 0.3, brandMean: 0.2, strictMean: 0.6 },
+  'Quality Focused': { priceMean: 0.3, qualityMean: 0.8, designMean: 0.5, brandMean: 0.5, strictMean: 0.7 },
+  'Design Lovers': { priceMean: 0.4, qualityMean: 0.5, designMean: 0.8, brandMean: 0.6, strictMean: 0.5 },
+  'Brand Loyal': { priceMean: 0.2, qualityMean: 0.6, designMean: 0.5, brandMean: 0.8, strictMean: 0.4 },
+};
+
 async function main() {
-  console.log('🌱 新しいスキーマでシードデータを投入開始...');
+  console.log('🌱 Review Predictor シードデータ投入開始...\n');
 
-  // 既存のデータをクリア（順序重要：外部キー制約のため）
-  await prisma.feedback.deleteMany();
-  await prisma.pDCACycle.deleteMany();
-  await prisma.idea.deleteMany();
-  await prisma.persona.deleteMany();
+  // 既存データをクリア
+  console.log('🗑️  既存データをクリア中...');
+  await prisma.predictedReview.deleteMany();
+  await prisma.simulation.deleteMany();
+  await prisma.product.deleteMany();
+  await prisma.customer.deleteMany();
+  await prisma.segment.deleteMany();
+  await prisma.category.deleteMany();
+  await prisma.seller.deleteMany();
 
-  // カテゴリ1: JAPAN_STANDARD (日本標準) - 30人
-  const japanStandardPersonas = [
-    { name: '田中 太郎', category: 'JAPAN_STANDARD' as Category, age: 19, occupation: '大学生', background: '好奇心旺盛で新しいものが好き。SNSで情報収集。趣味はゲーム、YouTube視聴。限られた予算で楽しみたいと考えており、口コミ重視で学割を好む。' },
-    { name: '鈴木 さくら', category: 'JAPAN_STANDARD' as Category, age: 18, occupation: '高校生', background: 'トレンドに敏感。友達との時間を大切にする。趣味はTikTok、ショッピング。バイト代をやりくりしており、インフルエンサーの影響を受けやすい。' },
-    { name: '佐藤 花子', category: 'JAPAN_STANDARD' as Category, age: 28, occupation: '会社員（事務職）', background: '真面目で計画的。ワークライフバランス重視。趣味はヨガ、読書、旅行。ストレス解消と自己投資を考えており、品質重視でご褒美消費をする。' },
-    { name: '山田 優', category: 'JAPAN_STANDARD' as Category, age: 25, occupation: 'IT企業勤務', background: '効率主義。テクノロジー好き。趣味はガジェット、アニメ。キャリアアップとスキル習得を目指しており、最新ガジェット好き。' },
-    { name: '中島 莉子', category: 'JAPAN_STANDARD' as Category, age: 26, occupation: '看護師', background: '優しくて面倒見が良い。激務に耐えている。趣味はカフェ、美容、Netflix。夜勤の疲れを癒したいと考えており、健康・美容製品に投資する。' },
-    { name: '高橋 陸', category: 'JAPAN_STANDARD' as Category, age: 29, occupation: 'エンジニア', background: '論理的で几帳面。技術が好き。趣味はプログラミング、ゲーム。技術の学習時間確保が課題で、技術書、オンライン講座を購入する。' },
-    { name: '小林 美咲', category: 'JAPAN_STANDARD' as Category, age: 27, occupation: 'マーケター', background: 'クリエイティブで社交的。趣味はSNS、イベント参加。成果を出し続けることが課題で、トレンド商品、自己啓発本を購入する。' },
-    { name: '鈴木 健一', category: 'JAPAN_STANDARD' as Category, age: 35, occupation: '会社員（営業職）', background: '社交的で人付き合いが得意。家族思い。趣味はゴルフ、飲み会。家族との時間とキャリアのバランスが課題で、実用性重視、ポイント好き。' },
-    { name: '伊藤 恵', category: 'JAPAN_STANDARD' as Category, age: 32, occupation: '主婦（パート）', background: '節約上手で家計管理が得意。趣味は料理、ハンドメイド。家計のやりくりが課題で、価格重視、セール情報をチェックする。' },
-    { name: '渡辺 誠二', category: 'JAPAN_STANDARD' as Category, age: 38, occupation: '教師', background: '教育熱心で生徒思い。趣味は読書、スポーツ観戦。教材研究と生徒指導が課題で、教育関連商品、書籍を購入する。' },
-    { name: '木村 ゆかり', category: 'JAPAN_STANDARD' as Category, age: 34, occupation: '薬剤師', background: '几帳面で健康意識が高い。趣味はランニング、料理。仕事と育児の両立が課題で、健康食品、時短家電を購入する。' },
-    { name: '林 達也', category: 'JAPAN_STANDARD' as Category, age: 39, occupation: '自営業（飲食店）', background: '情熱的で努力家。お客様第一。趣味は料理研究、食べ歩き。店の経営と新規顧客獲得が課題で、業務用品、食材にこだわる。' },
-    { name: '高橋 一郎', category: 'JAPAN_STANDARD' as Category, age: 45, occupation: '会社員（管理職）', background: '責任感が強く、部下の育成に熱心。趣味は読書、ウイスキー。仕事と家庭のバランスが課題で、品質重視、投資にも関心がある。' },
-    { name: '山本 香織', category: 'JAPAN_STANDARD' as Category, age: 42, occupation: '公務員', background: '安定志向。真面目で誠実。趣味は映画鑑賞、ガーデニング。子供の教育費準備が課題で、堅実、教育関連に投資する。' },
-    { name: '加藤 修', category: 'JAPAN_STANDARD' as Category, age: 48, occupation: '会社員（部長）', background: 'リーダーシップがある。家族思い。趣味はゴルフ、旅行。老後資金と子供の進学が課題で、品質と実績を重視する。' },
-    { name: '佐々木 美和', category: 'JAPAN_STANDARD' as Category, age: 44, occupation: 'パート（販売員）', background: '明るくて親しみやすい。趣味はショッピング、ドラマ。自分の時間を楽しみたいと考えており、プチプラとデパコスを使い分ける。' },
-    { name: '松本 健太郎', category: 'JAPAN_STANDARD' as Category, age: 46, occupation: '建設業', background: '職人気質。体を動かすのが好き。趣味は釣り、DIY。体力維持と技術継承が課題で、道具にはこだわる。' },
-    { name: '伊藤 真由美', category: 'JAPAN_STANDARD' as Category, age: 52, occupation: '看護師', background: '優しくて面倒見が良い。趣味はガーデニング、温泉。仕事のストレスケアが課題で、健康・美容に投資する。' },
-    { name: '田村 浩', category: 'JAPAN_STANDARD' as Category, age: 55, occupation: '会社員（役職者）', background: '経験豊富でベテラン。趣味はゴルフ、日本酒。定年後の生活設計が課題で、高品質志向、趣味に投資する。' },
-    { name: '中村 洋子', category: 'JAPAN_STANDARD' as Category, age: 53, occupation: '事務パート', background: '家庭的で節約家。趣味は料理、手芸。老後資金の準備が課題で、節約重視、セール狙い。' },
-    { name: '斉藤 誠', category: 'JAPAN_STANDARD' as Category, age: 58, occupation: '中小企業経営者', background: '実直で地域密着型。趣味は釣り、囲碁。事業承継と後継者育成が課題で、実用性と信頼性を重視する。' },
-    { name: '渡辺 誠', category: 'JAPAN_STANDARD' as Category, age: 62, occupation: '定年退職者（再雇用）', background: '穏やかで経験豊富。趣味は釣り、囲碁、旅行。年金生活への移行が課題で、必要なものだけ購入する。' },
-    { name: '中村 恵子', category: 'JAPAN_STANDARD' as Category, age: 68, occupation: '年金生活者', background: '健康で活動的。趣味は社交ダンス、孫の世話。健康寿命を延ばしたいと考えており、健康関連商品、孫へのプレゼントを購入する。' },
-    { name: '小林 拓也', category: 'JAPAN_STANDARD' as Category, age: 19, occupation: 'フリーター', background: 'マイペース。将来に不安。趣味はバンド、アニメ。将来のキャリアが課題で、安さ重視、友達の影響を受けやすい。' },
-    { name: '吉田 あゆみ', category: 'JAPAN_STANDARD' as Category, age: 40, occupation: 'パート（小売業）', background: '明るくて親しみやすい。趣味はショッピング、美容。自分らしさを取り戻したいと考えており、トレンド意識、プチプラとデパコスを購入する。' },
-    { name: '前田 聡', category: 'JAPAN_STANDARD' as Category, age: 23, occupation: '専門学校生', background: '真面目で将来を考えている。趣味はプログラミング学習、映画。就職活動と技術習得が課題で、必要なものだけ、教材には投資する。' },
-    { name: '岡田 結衣', category: 'JAPAN_STANDARD' as Category, age: 24, occupation: '美容師', background: 'おしゃれでトレンドに敏感。趣味はファッション、インスタ。技術向上と顧客満足が課題で、美容商品、ファッションアイテムを購入する。' },
-    { name: '藤田 健', category: 'JAPAN_STANDARD' as Category, age: 31, occupation: '銀行員', background: '堅実で計画的。趣味は投資、ジョギング。キャリアアップと資産形成が課題で、計画的消費、投資商品を購入する。' },
-    { name: '井上 麻衣', category: 'JAPAN_STANDARD' as Category, age: 29, occupation: '保育士', background: '子供好きで優しい。趣味は手遊び研究、ピアノ。低賃金での生活が課題で、価格重視、子供向け商品を購入する。' },
-    { name: '木下 龍一', category: 'JAPAN_STANDARD' as Category, age: 36, occupation: '警察官', background: '正義感が強く真面目。趣味は武道、読書。危険な仕事と家族の安心が課題で、実用性重視、保険に加入する。' },
-  ];
+  // カテゴリを作成
+  console.log('📁 カテゴリを作成中...');
+  const categories = await Promise.all([
+    prisma.category.create({ data: { name: '家電', description: '家庭用電化製品' } }),
+    prisma.category.create({ data: { name: 'ファッション', description: '衣料品・アクセサリー' } }),
+    prisma.category.create({ data: { name: '食品', description: '食料品・飲料' } }),
+    prisma.category.create({ data: { name: '美容', description: '化粧品・スキンケア' } }),
+    prisma.category.create({ data: { name: '書籍', description: '本・雑誌・電子書籍' } }),
+  ]);
+  console.log(`   ✅ ${categories.length}カテゴリ作成完了`);
 
-  // カテゴリ2: BUSINESS_FOCUSED (訪日外国人) - 30人
-  const businessFocusedPersonas = [
-    { name: 'Emily Johnson', category: 'BUSINESS_FOCUSED' as Category, age: 28, occupation: 'マーケター', background: 'アクティブで冒険好き。趣味は旅行、写真、ヨガ。短期間で日本の魅力を最大限体験したいと考えており、体験型消費、インスタ映えを重視する。' },
-    { name: 'David Chen', category: 'BUSINESS_FOCUSED' as Category, age: 35, occupation: 'IT企業勤務', background: 'テクノロジー好き。家族思い。趣味はガジェット、アニメ、温泉。家族全員が楽しめる旅行が課題で、高品質電化製品、伝統工芸品を購入する。' },
-    { name: 'Sophie Martin', category: 'BUSINESS_FOCUSED' as Category, age: 23, occupation: '大学院生', background: 'バックパッカー気質。趣味は文化探訪、ハイキング。予算を抑えて深い体験をしたいと考えており、価格重視だが本物の体験には払う。' },
-    { name: 'Michael Brown', category: 'BUSINESS_FOCUSED' as Category, age: 55, occupation: '弁護士', background: '富裕層。高級志向。趣味はゴルフ、高級寿司。本物の文化とラグジュアリーの両立が課題で、価格を気にせず最高品質を求む。' },
-    { name: 'Li Wei', category: 'BUSINESS_FOCUSED' as Category, age: 30, occupation: 'ビジネスオーナー', background: 'ビジネスチャンスを探す。趣味はショッピング、グルメ。日本製品を大量購入したいと考えており、爆買い傾向、ブランド品を購入する。' },
-    { name: 'Anna Schmidt', category: 'BUSINESS_FOCUSED' as Category, age: 42, occupation: '教師', background: '文化や歴史に興味津々。趣味は博物館、書道。生徒に日本文化を伝える資料集めが課題で、教育的価値、伝統工芸品を購入する。' },
-    { name: 'James Wilson', category: 'BUSINESS_FOCUSED' as Category, age: 26, occupation: 'YouTuber', background: 'エンターテイナー気質。趣味は動画制作、コスプレ。バズるコンテンツ作りが課題で、面白い・ユニーク重視、SNS映えを求める。' },
-    { name: 'Maria Garcia', category: 'BUSINESS_FOCUSED' as Category, age: 38, occupation: 'ファッションデザイナー', background: 'クリエイティブで美的センス高い。趣味はファッション、アート。日本の伝統とモダンの融合が課題で、デザイン性の高い商品を購入する。' },
-    { name: 'Ryan Kim', category: 'BUSINESS_FOCUSED' as Category, age: 24, occupation: 'プロゲーマー', background: 'ゲームとアニメ大好き。趣味はゲーム、アニメ、フィギュア。聖地巡礼とレアグッズ入手が課題で、アニメ・ゲーム関連を大量購入する。' },
-    { name: 'Isabella Rossi', category: 'BUSINESS_FOCUSED' as Category, age: 50, occupation: 'ワイン輸入業者', background: 'グルメで美食家。趣味は日本酒、料亭巡り、陶芸。日本の食文化を理解しビジネスにしたいと考えており、高級食材、酒類、工芸品を購入する。' },
-    { name: 'Tom Anderson', category: 'BUSINESS_FOCUSED' as Category, age: 32, occupation: 'フォトグラファー', background: '芸術的で感性豊か。趣味は写真、寺社仏閣巡り。日本の美を切り取りたいと考えており、カメラ機材、写真集を購入する。' },
-    { name: 'Sarah Lee', category: 'BUSINESS_FOCUSED' as Category, age: 29, occupation: 'ブロガー', background: 'SNS好き。情報発信が得意。趣味はグルメ、カフェ巡り。フォロワーが喜ぶコンテンツ作りが課題で、インスタ映え、お土産を大量購入する。' },
-    { name: 'Peter Zhang', category: 'BUSINESS_FOCUSED' as Category, age: 45, occupation: 'ビジネスマン', background: '成功志向。家族を大切に。趣味は高級レストラン、ゴルフ。家族に最高の体験をさせたいと考えており、高級品、家族全員分を購入する。' },
-    { name: 'Linda Wang', category: 'BUSINESS_FOCUSED' as Category, age: 33, occupation: '医師', background: '知的で慎重。趣味は美術館、茶道体験。日本の伝統文化を学びたいと考えており、品質重視、文化体験に投資する。' },
-    { name: 'Carlos Silva', category: 'BUSINESS_FOCUSED' as Category, age: 27, occupation: 'サッカー選手', background: '情熱的でエネルギッシュ。趣味はスポーツ、ナイトライフ。日本でのトレーニングと観光が課題で、スポーツ用品、高級品を購入する。' },
-    { name: 'Emma White', category: 'BUSINESS_FOCUSED' as Category, age: 22, occupation: '留学生', background: '好奇心旺盛。日本文化を吸収中。趣味はアニメ、日本語学習、カラオケ。限られた予算で楽しみたいと考えており、安価だが日本らしいものを購入する。' },
-    { name: 'Hans Mueller', category: 'BUSINESS_FOCUSED' as Category, age: 48, occupation: 'エンジニア', background: '几帳面で計画的。趣味は鉄道、技術博物館。効率的に観光したいと考えており、技術関連、鉄道グッズを購入する。' },
-    { name: 'Olivia Taylor', category: 'BUSINESS_FOCUSED' as Category, age: 31, occupation: 'ヨガインストラクター', background: '精神性を重視。平和主義。趣味は瞑想、神社巡り、和食。日本の禅文化を学びたいと考えており、精神的価値、オーガニック製品を購入する。' },
-    { name: 'Alexandre Dubois', category: 'BUSINESS_FOCUSED' as Category, age: 36, occupation: 'シェフ', background: 'グルメで探究心旺盛。趣味は料理研究、市場巡り。日本の食材と調理技術を学びたいと考えており、食材、調理器具、料理本を購入する。' },
-    { name: 'Jessica Park', category: 'BUSINESS_FOCUSED' as Category, age: 26, occupation: 'K-POPダンサー', background: 'エネルギッシュで表現力豊か。趣味はダンス、ファッション、カフェ。日本でのパフォーマンス機会が課題で、ファッション、ダンス用品を購入する。' },
-    { name: 'Ahmed Hassan', category: 'BUSINESS_FOCUSED' as Category, age: 40, occupation: '貿易商', background: 'ビジネスセンスがある。趣味は商談、ゴルフ、和食。日本企業とのビジネス拡大が課題で、高品質商品を大量仕入れする。' },
-    { name: 'Rachel Cohen', category: 'BUSINESS_FOCUSED' as Category, age: 34, occupation: 'ジャーナリスト', background: '知的で観察力がある。趣味は取材、執筆、温泉。日本の魅力を記事にしたいと考えており、体験重視、お土産も購入する。' },
-    { name: 'Marco Bianchi', category: 'BUSINESS_FOCUSED' as Category, age: 52, occupation: 'レストランオーナー', background: '情熱的で美食家。趣味は料理、ワイン、芸術。日本の食文化を学びたいと考えており、高級食材、調理器具を購入する。' },
-    { name: 'Chloe Thompson', category: 'BUSINESS_FOCUSED' as Category, age: 25, occupation: 'インフルエンサー', background: 'トレンドセッター。SNS好き。趣味はインスタ、ファッション、カフェ。バズる投稿を作りたいと考えており、SNS映え最優先、大量購入する。' },
-    { name: 'Lucas Santos', category: 'BUSINESS_FOCUSED' as Category, age: 29, occupation: 'サッカーコーチ', background: '情熱的でリーダーシップがある。趣味はサッカー、観光、日本文化。短期間で多くを体験したいと考えており、スポーツ用品、お土産を購入する。' },
-    { name: 'Nina Petrov', category: 'BUSINESS_FOCUSED' as Category, age: 37, occupation: 'バレエダンサー', background: '芸術的で完璧主義。趣味はバレエ、美術、和文化。日本の美意識を学びたいと考えており、美容、芸術関連商品を購入する。' },
-    { name: 'Kevin O\'Brien', category: 'BUSINESS_FOCUSED' as Category, age: 43, occupation: '建築家', background: 'デザイン思考。細部にこだわる。趣味は建築巡り、寺社仏閣。日本建築のエッセンスを学びたいと考えており、建築書、デザイングッズを購入する。' },
-    { name: 'Yuki Tanaka', category: 'BUSINESS_FOCUSED' as Category, age: 30, occupation: '日系二世（米国）', background: 'ルーツを探している。趣味は家族探し、観光、和食。日本の文化を再発見したいと考えており、家族へのお土産、伝統工芸を購入する。' },
-    { name: 'Robert Miller', category: 'BUSINESS_FOCUSED' as Category, age: 60, occupation: '退職者（元CEO）', background: '富裕層。時間とお金に余裕。趣味は高級旅館、ゴルフ、骨董品。最高級の日本体験をしたいと考えており、価格は度外視、VIP体験を求める。' },
-    { name: 'Sophia Nguyen', category: 'BUSINESS_FOCUSED' as Category, age: 21, occupation: '学生', background: '若くて元気。アニメ好き。趣味はアニメ、ショッピング、カラオケ。学生予算で楽しみたいと考えており、プチプラ、アニメグッズを購入する。' },
-  ];
+  // セグメントを作成
+  console.log('👥 セグメントを作成中...');
+  const segments = await Promise.all([
+    prisma.segment.create({ data: { name: 'Price Sensitive', description: '価格に敏感な顧客層' } }),
+    prisma.segment.create({ data: { name: 'Quality Focused', description: '品質重視の顧客層' } }),
+    prisma.segment.create({ data: { name: 'Design Lovers', description: 'デザイン重視の顧客層' } }),
+    prisma.segment.create({ data: { name: 'Brand Loyal', description: 'ブランド重視の顧客層' } }),
+  ]);
+  console.log(`   ✅ ${segments.length}セグメント作成完了`);
 
-  // カテゴリ3: TECH_ADVANCED (ビジネス・テック系) - 30人
-  const techAdvancedPersonas = [
-    { name: '山本 裕太', category: 'TECH_ADVANCED' as Category, age: 29, occupation: 'スタートアップCEO', background: 'エネルギッシュで挑戦的。趣味はネットワーキング、サウナ。資金調達、人材確保が課題で、効率化ツール、ROI重視で購入する。' },
-    { name: '加藤 真理子', category: 'TECH_ADVANCED' as Category, age: 32, occupation: 'フルスタックエンジニア', background: '論理的で問題解決が得意。趣味はプログラミング、ハッカソン。最新技術のキャッチアップが課題で、高性能ガジェット、技術書を購入する。' },
-    { name: '佐々木 健太', category: 'TECH_ADVANCED' as Category, age: 35, occupation: 'VC投資家', background: '分析的で先見性がある。趣味はピッチ参加、ゴルフ。次のユニコーン発見が課題で、投資機会を探し、高級品を購入する。' },
-    { name: '西村 あかり', category: 'TECH_ADVANCED' as Category, age: 27, occupation: 'UXデザイナー', background: 'クリエイティブで共感力高い。趣味はデザイン、美術館。ユーザーに愛されるプロダクトが課題で、デザインツール、美的消費をする。' },
-    { name: '田村 大輔', category: 'TECH_ADVANCED' as Category, age: 41, occupation: 'CTO', background: '技術力とマネジメント両立。趣味はOSS開発、ジム。技術的負債解消、組織スケールが課題で、チーム生産性向上ツールを購入する。' },
-    { name: '森田 春菜', category: 'TECH_ADVANCED' as Category, age: 30, occupation: 'プロダクトマネージャー', background: '戦略的思考。データドリブン。趣味はデータ分析、ヨガ。PMF達成とステークホルダー調整が課題で、ビジネス書、効率化ツールを購入する。' },
-    { name: '石井 翔', category: 'TECH_ADVANCED' as Category, age: 25, occupation: 'AIエンジニア', background: '天才肌で研究熱心。趣味は機械学習、論文。研究と実装のバランスが課題で、高性能GPU、クラウドサービスを購入する。' },
-    { name: '岡本 みゆき', category: 'TECH_ADVANCED' as Category, age: 38, occupation: 'グロースハッカー', background: '実験的で数字に強い。趣味はA/Bテスト、ランニング。CAC最適化、成長戦略が課題で、マーケティングツールを購入する。' },
-    { name: '青木 拓海', category: 'TECH_ADVANCED' as Category, age: 33, occupation: 'ブロックチェーンエンジニア', background: '革新的で理想主義。趣味はクリプト、Web3、DJ。メインストリーム採用が課題で、仮想通貨、NFT、Web3ツールを購入する。' },
-    { name: '橋本 沙織', category: 'TECH_ADVANCED' as Category, age: 28, occupation: 'DevOpsエンジニア', background: '効率重視。自動化好き。趣味はインフラ構築、サイクリング。CI/CD最適化が課題で、クラウドサービス、監視ツールを購入する。' },
-    { name: '中野 隼人', category: 'TECH_ADVANCED' as Category, age: 26, occupation: 'データサイエンティスト', background: 'データ好きで分析的。趣味は統計、機械学習、囲碁。ビジネス価値あるインサイト発見が課題で、分析ツール、オンライン講座を購入する。' },
-    { name: '藤原 梨花', category: 'TECH_ADVANCED' as Category, age: 31, occupation: 'SaaSマーケター', background: 'B2Bマーケに強い。趣味はセミナー参加、ワイン。リード獲得とコンバージョンが課題で、マーケティング本、ツールを購入する。' },
-    { name: '大塚 剛', category: 'TECH_ADVANCED' as Category, age: 44, occupation: 'セキュリティエンジニア', background: '慎重で細かい。セキュリティ第一。趣味はハッキング研究、読書。ゼロデイ脆弱性対策が課題で、セキュリティツール、勉強会に参加する。' },
-    { name: '平野 瞳', category: 'TECH_ADVANCED' as Category, age: 29, occupation: 'スクラムマスター', background: 'ファシリテーション得意。趣味はアジャイル勉強会、ヨガ。チームの生産性向上が課題で、アジャイル本、ツールを購入する。' },
-    { name: '小川 悠太', category: 'TECH_ADVANCED' as Category, age: 27, occupation: 'モバイルアプリ開発者', background: 'クリエイティブで技術好き。趣味はアプリ開発、ゲーム。ヒットアプリを作りたいと考えており、開発ツール、デバイスを購入する。' },
-    { name: '安藤 真紀', category: 'TECH_ADVANCED' as Category, age: 34, occupation: 'HRテック創業者', background: '人事とテクノロジーの融合。趣味は採用イベント、読書。優秀な人材の採用が課題で、HRツール、採用広告を購入する。' },
-    { name: '内田 勇気', category: 'TECH_ADVANCED' as Category, age: 36, occupation: 'クラウドアーキテクト', background: '設計力が高い。先を見据える。趣味はAWS勉強、登山。スケーラブルなシステム設計が課題で、クラウド認定、技術書を購入する。' },
-    { name: '斉藤 彩', category: 'TECH_ADVANCED' as Category, age: 30, occupation: 'カスタマーサクセス', background: '共感力高く、顧客志向。趣味は顧客インタビュー、旅行。顧客満足度とリテンション向上が課題で、CSツール、自己啓発本を購入する。' },
-    { name: '水野 健', category: 'TECH_ADVANCED' as Category, age: 39, occupation: 'SREエンジニア', background: '信頼性第一。24/7対応の覚悟。趣味は障害対応、登山。サービス可用性99.99%維持が課題で、監視ツール、インシデント管理を購入する。' },
-    { name: '吉岡 美穂', category: 'TECH_ADVANCED' as Category, age: 28, occupation: 'コンテンツマーケター', background: 'ストーリーテリングが得意。趣味はライティング、読書。エンゲージメント向上が課題で、ライティングツール、セミナーに参加する。' },
-    { name: '谷口 翔太', category: 'TECH_ADVANCED' as Category, age: 42, occupation: 'CFO', background: '財務に強い。リスク管理重視。趣味は投資、ゴルフ、読書。IPO準備と財務健全性が課題で、投資商品、ビジネス書を購入する。' },
-    { name: '永井 さやか', category: 'TECH_ADVANCED' as Category, age: 26, occupation: 'QAエンジニア', background: '細かくて几帳面。趣味はテスト自動化、カフェ。品質とスピードの両立が課題で、テストツール、技術書を購入する。' },
-    { name: '島田 大樹', category: 'TECH_ADVANCED' as Category, age: 37, occupation: 'AIコンサルタント', background: 'AI技術とビジネスの橋渡し。趣味はAI研究、ビジネス書。AI活用の啓蒙が課題で、AI関連サービス、勉強会に参加する。' },
-    { name: '北川 愛', category: 'TECH_ADVANCED' as Category, age: 33, occupation: 'UI/UXリサーチャー', background: 'ユーザー心理を深く理解。趣味はユーザーインタビュー、旅行。定性・定量調査の統合が課題で、リサーチツール、UX書籍を購入する。' },
-    { name: '飯田 啓介', category: 'TECH_ADVANCED' as Category, age: 40, occupation: 'テックリード', background: '技術選定のプロ。趣味は技術検証、メンタリング。アーキテクチャ決定の重責が課題で、技術カンファレンス、書籍を購入する。' },
-    { name: '松井 優子', category: 'TECH_ADVANCED' as Category, age: 37, occupation: '歯科衛生士', background: '几帳面で健康意識高い。趣味はヨガ、料理。仕事と家事の両立が課題で、健康食品、オーガニック製品を購入する。' },
-    { name: '森 誠', category: 'TECH_ADVANCED' as Category, age: 43, occupation: '不動産営業', background: '話し上手で営業力がある。趣味はゴルフ、接待。ノルマ達成と顧客満足が課題で、接待費、ゴルフ用品を購入する。' },
-    { name: '石川 千春', category: 'TECH_ADVANCED' as Category, age: 41, occupation: 'ピアノ講師', background: '芸術的で繊細。趣味はクラシック音楽、読書。生徒募集と収入安定が課題で、楽譜、音楽関連商品を購入する。' },
-    { name: '清水 大輔', category: 'TECH_ADVANCED' as Category, age: 47, occupation: '製造業（工場長）', background: '責任感強く、現場主義。趣味は野球観戦、温泉。生産性向上と人材育成が課題で、実用品、家族のために購入する。' },
-    { name: '橋本 真奈美', category: 'TECH_ADVANCED' as Category, age: 49, occupation: '学校事務', background: '丁寧で気配りができる。趣味は園芸、料理。子供の大学費用準備が課題で、堅実、教育費を優先する。' },
-  ];
+  // デフォルト販売者を作成
+  console.log('🏪 デフォルト販売者を作成中...');
+  const defaultSeller = await prisma.seller.create({
+    data: {
+      name: 'システム販売者',
+      email: 'system@review-predictor.local',
+    },
+  });
+  console.log(`   ✅ 販売者作成完了`);
 
-  // すべてのペルソナを結合
-  const allPersonas = [
-    ...japanStandardPersonas,
-    ...businessFocusedPersonas,
-    ...techAdvancedPersonas,
-  ];
+  // 10,000人の顧客を作成
+  console.log('👤 10,000人の顧客を作成中...');
+  const TOTAL_CUSTOMERS = 10000;
+  const CUSTOMERS_PER_SEGMENT = 2500;
+  const BATCH_SIZE = 500;
 
-  // データベースに投入
-  for (const persona of allPersonas) {
-    await prisma.persona.create({
-      data: persona,
-    });
+  let customerCount = 0;
+
+  for (let segmentIndex = 0; segmentIndex < segments.length; segmentIndex++) {
+    const segment = segments[segmentIndex];
+    const profile = segmentProfiles[segment.name as keyof typeof segmentProfiles];
+
+    console.log(`   📊 ${segment.name}セグメント (${CUSTOMERS_PER_SEGMENT}人)...`);
+
+    for (let batch = 0; batch < CUSTOMERS_PER_SEGMENT / BATCH_SIZE; batch++) {
+      const customers = [];
+
+      for (let i = 0; i < BATCH_SIZE; i++) {
+        const globalIndex = customerCount + i;
+        const name = generateJapaneseName(globalIndex);
+
+        // セグメントの傾向に基づいてプロファイルベクトルを生成
+        const profileVector = [
+          normalRandom(profile.priceMean, 0.15),    // 価格敏感度
+          normalRandom(profile.qualityMean, 0.15),  // 品質重視度
+          normalRandom(profile.designMean, 0.15),   // デザイン重視度
+          normalRandom(profile.brandMean, 0.15),    // ブランドロイヤリティ
+          normalRandom(profile.strictMean, 0.15),   // レビュー厳しさ
+        ];
+
+        // 384次元の好みベクトルを生成
+        const preferenceVector = generateRandomVector(384);
+
+        customers.push({
+          segmentId: segment.id,
+          name,
+          profileVector: `[${profileVector.join(',')}]`,
+          preferenceVector: `[${preferenceVector.join(',')}]`,
+        });
+      }
+
+      // 生SQLでバッチ挿入（Unsupported型のため）
+      for (const customer of customers) {
+        await prisma.$executeRawUnsafe(`
+          INSERT INTO customers (id, "segmentId", name, "profileVector", "preferenceVector", "createdAt")
+          VALUES (
+            gen_random_uuid()::text,
+            '${customer.segmentId}',
+            '${customer.name.replace(/'/g, "''")}',
+            '${customer.profileVector}'::vector(5),
+            '${customer.preferenceVector}'::vector(384),
+            NOW()
+          )
+        `);
+      }
+
+      customerCount += BATCH_SIZE;
+      process.stdout.write(`      ${customerCount}/${TOTAL_CUSTOMERS} 完了\r`);
+    }
   }
 
-  console.log(`✅ ${allPersonas.length}人のペルソナを作成しました！`);
-  console.log(`   - JAPAN_STANDARD: ${japanStandardPersonas.length}人`);
-  console.log(`   - BUSINESS_FOCUSED: ${businessFocusedPersonas.length}人`);
-  console.log(`   - TECH_ADVANCED: ${techAdvancedPersonas.length}人`);
+  console.log(`\n   ✅ ${TOTAL_CUSTOMERS}人の顧客作成完了`);
+
+  // HNSWインデックスを作成
+  console.log('🔍 ベクトル検索用インデックスを作成中...');
+  try {
+    await prisma.$executeRawUnsafe(`
+      CREATE INDEX IF NOT EXISTS customers_preference_vector_idx
+      ON customers
+      USING hnsw (preference_vector vector_cosine_ops)
+    `);
+    console.log('   ✅ HNSWインデックス作成完了');
+  } catch (error) {
+    console.log('   ⚠️  インデックスは既に存在するか、作成できませんでした');
+  }
+
+  // 統計情報を表示
+  console.log('\n📊 シードデータ統計:');
+  const stats = await Promise.all([
+    prisma.category.count(),
+    prisma.segment.count(),
+    prisma.seller.count(),
+    prisma.customer.count(),
+  ]);
+
+  console.log(`   カテゴリ: ${stats[0]}`);
+  console.log(`   セグメント: ${stats[1]}`);
+  console.log(`   販売者: ${stats[2]}`);
+  console.log(`   顧客: ${stats[3]}`);
+
+  console.log('\n✅ シードデータ投入完了！');
 }
 
 main()
@@ -141,3 +195,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
