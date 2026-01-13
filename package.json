@@ -9,10 +9,12 @@
     "vector:setup": "tsx setup-vector.ts",
     "vector:generate": "tsx generate-embeddings.ts",
     "db:check": "tsx quick-restore.ts",
-    "db:restore": "npx prisma db seed && npm run demo && npm run vector:generate"
+    "db:restore": "npx prisma db seed && npm run demo && npm run vector:generate",
+    "pdca": "tsx quick-pdca.ts",
+    "pdca:run": "tsx run-pdca-cycle.ts"
   },
   "dependencies": {
-    "@prisma/client": "6.19.1",
+    "@prisma/client": "^6.19.1",
     "prisma": "6.19.1"
   },
   "devDependencies": {

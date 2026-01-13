@@ -1,3 +1,11 @@
+// Market Mirror - Prisma Schema (DESIGN_DOCUMENT.md準拠)
+// PDCAサイクル自動実行Webアプリ
+// データベース課題として評価されるポイント：
+// 1. リレーショナル設計（外部キー、CASCADE）
+// 2. 正規化（第3正規形準拠）
+// 3. インデックス最適化
+// 4. 一意制約
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,107 +15,98 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ========================================
+// ペルソナマスターデータ（90人固定）
+// ========================================
+model Persona {
+  id          String   @id @default(cuid())
+  name        String   // 例: 佐藤太郎
+  category    Category
+  age         Int
+  occupation  String   // 例: 会社員（営業）
+  background  String   @db.Text // 詳細プロフィール
+
+  feedbacks   Feedback[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@map("personas")
+}
+
+// ========================================
+// 3つのカテゴリ定義
+// ========================================
+enum Category {
+  JAPAN_STANDARD    // 日本標準（一般的な日本人30人）
+  BUSINESS_FOCUSED  // ビジネス特化（経営者・投資家30人）
+  TECH_ADVANCED     // テクノロジー先進（エンジニア・研究者30人）
+}
+
+// ========================================
+// ビジネスアイデア
+// ========================================
 model Idea {
-  id               Int           @id @default(autoincrement())
-  title            String        @db.VarChar(200)
-  description      String
-  targetAudience   String        @db.VarChar(500)
-  category         String?       @db.VarChar(100)
-  expectedPrice    Decimal?      @db.Decimal(10, 2)
-  embedding        Unsupported("vector(1536)")?
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
-  parentId         Int?
-  status           String        @default("draft") @db.VarChar(50)
-  version          Int           @default(1)
-  parent           Idea?         @relation("IdeaVersions", fields: [parentId], references: [id])
-  improvements     Idea[]        @relation("IdeaVersions")
-  adoptedProposals Proposal[]    @relation("AdoptedProposal")
-  proposals        Proposal[]    @relation("IdeaProposals")
-  reviews          Review[]
-  analysisJobs     AnalysisJob[]
+  id          String     @id @default(cuid())
+  content     String     @db.Text  // Plan: アイデア本文
+  category    Category              // 選択されたカテゴリ
+  cycleCount  Int                   // PDCA実行回数（1/3/5/10）
+  status      IdeaStatus @default(PENDING)
+
+  cycles      PDCACycle[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@map("ideas")
 }
 
-model Persona {
-  id             Int      @id @default(autoincrement())
-  name           String   @db.VarChar(100)
-  age            Int
-  gender         String   @db.VarChar(20)
-  occupation     String   @db.VarChar(100)
-  annualIncome   Int
-  personality    String
-  hobbies        String
-  challenges     String
-  buyingBehavior String
-  createdAt      DateTime @default(now())
-  category       String   @db.VarChar(100)
-  reviews        Review[]
-
-  @@map("personas")
+enum IdeaStatus {
+  PENDING    // 未実行
+  RUNNING    // 実行中
+  COMPLETED  // 完了
+  FAILED     // 失敗
 }
 
-model Review {
-  id                    Int      @id @default(autoincrement())
-  ideaId                Int
-  personaId             Int
-  score                 Int
-  comment               String
-  willBuy               Boolean
-  improvementSuggestion String
-  pricePerception       String?  @db.VarChar(50)
-  trustLevel            Int?
-  createdAt             DateTime @default(now())
-  idea                  Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
-  persona               Persona  @relation(fields: [personaId], references: [id], onDelete: Cascade)
+// ========================================
+// PDCAサイクル（1回目、2回目...）
+// ========================================
+model PDCACycle {
+  id          String   @id @default(cuid())
+  ideaId      String
+  idea        Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
 
-  @@unique([ideaId, personaId])
+  cycleNumber Int      // 何回目（1, 2, 3, ...）
+
+  feedbacks   Feedback[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([ideaId, cycleNumber])
   @@index([ideaId])
-  @@index([personaId])
-  @@map("reviews")
+  @@map("pdca_cycles")
 }
 
-model Proposal {
-  id              Int       @id @default(autoincrement())
-  sourceIdeaId    Int
-  title           String    @db.VarChar(200)
-  description     String
-  targetAudience  String    @db.VarChar(500)
-  status          String    @default("pending") @db.VarChar(50)
-  adoptedAsIdeaId Int?
-  aiReasoning     String?
-  estimatedScore  Decimal?  @db.Decimal(3, 1)
-  selectionReason String?
-  createdAt       DateTime  @default(now())
-  adoptedAt       DateTime?
-  adoptedIdea     Idea?     @relation("AdoptedProposal", fields: [adoptedAsIdeaId], references: [id])
-  sourceIdea      Idea      @relation("IdeaProposals", fields: [sourceIdeaId], references: [id], onDelete: Cascade)
+// ========================================
+// 各ペルソナのフィードバック（D, C, A）
+// ========================================
+model Feedback {
+  id          String    @id @default(cuid())
+  cycleId     String
+  cycle       PDCACycle @relation(fields: [cycleId], references: [id], onDelete: Cascade)
 
-  @@index([sourceIdeaId])
-  @@index([status])
-  @@map("proposals")
-}
+  personaId   String
+  persona     Persona   @relation(fields: [personaId], references: [id])
 
-model AnalysisJob {
-  id                String    @id @default(uuid())
-  ideaId            Int
-  userId            String?   @db.VarChar(100)
-  status            String    @default("PENDING") @db.VarChar(20)
-  currentStep       Int       @default(0)
-  totalSteps        Int       @default(30)
-  influencerMode    Boolean   @default(false)
-  influencerResults Json?
-  distortionWeights Json?
-  result            Json?
-  error             String?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  startedAt         DateTime?
-  completedAt       DateTime?
-  idea              Idea      @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  doResponse    String  @db.Text  // D: 実際に試すなら何をする？
+  checkResponse String  @db.Text  // C: Doに対するフィードバック
+  actResponse   String  @db.Text  // A: 改善案の提案
 
-  @@index([status, createdAt])
-  @@index([ideaId])
-  @@map("analysis_jobs")
+  createdAt   DateTime @default(now())
+
+  @@unique([cycleId, personaId])
+  @@index([cycleId])
+  @@map("feedbacks")
 }

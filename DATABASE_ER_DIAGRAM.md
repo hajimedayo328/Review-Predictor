@@ -1,4 +1,4 @@
-# データベース設計 (ER図)
+# Market Mirror データベース ER図
 
 ## 概要
 Market Mirrorアプリケーションのデータベース設計をMermaid.js形式で表現したER図です。
@@ -201,3 +201,11 @@ erDiagram
 2. **Ideaのバージョン管理**: `parentId`を使用してアイデアの改善履歴を追跡
 3. **Proposalの採用**: `adoptedAsIdeaId`が設定されると、新しい`Idea`レコードが作成される
 4. **AnalysisJobの状態管理**: `status`フィールドで処理の進行状況を追跡（PENDING → PROCESSING → COMPLETED/FAILED）
+
+
+
+
+
+
+
+
