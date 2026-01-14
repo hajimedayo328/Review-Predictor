@@ -200,42 +200,33 @@ ECサイトで新商品を出品する際、**「この商品は売れるのか�
 
 ## 🔧 システムアーキテクチャ
 
-```mermaid
-graph TB
-    subgraph Frontend["フロントエンド (Next.js)"]
-        A[入力画面] --> B[結果画面]
-    end
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              システム全体図                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
 
-    subgraph Backend["バックエンド (API Routes)"]
-        C[POST /api/simulate]
-        D[GET /api/results/:id]
-    end
+┌─────────────────┐      ┌─────────────────┐      ┌─────────────────────────┐
+│  フロントエンド  │      │   バックエンド   │      │      データベース        │
+│   (Next.js)     │      │  (API Routes)   │      │  (PostgreSQL+pgvector)  │
+├─────────────────┤      ├─────────────────┤      ├─────────────────────────┤
+│                 │      │                 │      │                         │
+│  ┌───────────┐  │ POST │  ┌───────────┐  │      │  ┌───────────────────┐  │
+│  │ 入力画面  │──┼──────┼─→│ /api/     │  │ SQL  │  │ customers         │  │
+│  │ (/input)  │  │      │  │ simulate  │──┼──────┼─→│ (10,000人)        │  │
+│  └───────────┘  │      │  └───────────┘  │      │  │ preferenceVector  │  │
+│       │        │      │       │         │      │  └───────────────────┘  │
+│       │        │      │       ↓         │      │           │             │
+│       ↓        │      │  ┌───────────┐  │      │           ↓             │
+│  ┌───────────┐  │      │  │ Embedder  │  │      │  ┌───────────────────┐  │
+│  │ 結果画面  │  │      │  │ (384次元) │  │      │  │ simulations       │  │
+│  │ (/result) │←─┼──────┼──│───────────│  │      │  │ predicted_reviews │  │
+│  └───────────┘  │ GET  │  │ Predictor │  │      │  │ (10,000件/回)     │  │
+│                 │      │  │ Generator │  │      │  └───────────────────┘  │
+│                 │      │  └───────────┘  │      │                         │
+└─────────────────┘      └─────────────────┘      └─────────────────────────┘
 
-    subgraph Engine["シミュレーションエンジン"]
-        E[Embedder<br/>テキスト→ベクトル変換]
-        F[Predictor<br/>評価予測アルゴリズム]
-        G[ReviewGenerator<br/>レビューテキスト生成]
-        H[Aggregator<br/>統計集計]
-    end
-
-    subgraph Database["PostgreSQL + pgvector"]
-        I[(customers<br/>10,000人)]
-        J[(products)]
-        K[(simulations)]
-        L[(predicted_reviews)]
-    end
-
-    A -->|商品説明文| C
-    C --> E
-    E -->|384次元ベクトル| I
-    I -->|類似度検索| F
-    F --> G
-    G --> H
-    H -->|結果保存| K
-    H -->|レビュー保存| L
-    B -->|取得| D
-    D --> K
-    D --> L
+処理フロー:
+  商品説明文 → ベクトル化(384次元) → 類似度検索(HNSW) → 評価予測 → 結果保存
 ```
 
 ---
@@ -257,22 +248,45 @@ ORDER BY c."preferenceVector" <=> $1::vector
 - **HNSWインデックス**: O(n) → O(log n) の高速化
 - **コサイン類似度**: テキストの意味的な近さを測定
 
-### 2. 評価予測アルゴリズム
+### 2. 評価予測アルゴリズム（5次元プロファイルベクトル）
+
+各顧客には**5次元のプロファイルベクトル**が設定されています：
+
+| 次元 | 名前 | 説明 |
+|-----|------|------|
+| 0 | 価格敏感度 | 高いと価格に厳しく、中間評価になりやすい |
+| 1 | 品質重視度 | 高いと品質を重視し、類似度が高ければ高評価 |
+| 2 | デザイン重視度 | 高いとデザインを重視、中間評価になりやすい |
+| 3 | ブランドロイヤリティ | 高いとブランドを重視、類似度が高ければ+0.5 |
+| 4 | レビュー厳しさ | 高いと厳しめ(-0.5)、低いと甘め(+0.3) |
+
+**計算式:**
 
 ```typescript
-// 類似度とセグメント特性から評価を予測
-let score = similarity * 5;  // 基本スコア
+// 基本スコア = 類似度 × 5
+let baseScore = similarity * 5;
 
-if (segment === 'Quality Focused' && similarity > 0.7) {
-    score += 0.8;  // 品質重視層は高類似度で高評価
+// プロファイルによる調整
+if (similarity > 0.7 && qualityFocus > 0.7) {
+    baseScore += 0.8;  // 品質重視で類似度高い → 高評価
 }
-if (segment === 'Price Sensitive' && similarity < 0.6) {
-    score -= 0.5;  // 価格重視層は低類似度で厳しめ
+if (similarity > 0.6 && brandLoyalty > 0.7) {
+    baseScore += 0.5;  // ブランド重視で類似度高い → +0.5
 }
-// ... その他の調整
+if (similarity > 0.4 && similarity < 0.7 && priceSensitivity > 0.7) {
+    baseScore -= 0.5;  // 価格敏感で類似度中程度 → -0.5
+}
+if (reviewStrictness > 0.7) {
+    baseScore -= 0.5;  // レビュー厳しい → -0.5
+} else if (reviewStrictness < 0.3) {
+    baseScore += 0.3;  // レビュー甘い → +0.3
+}
 
-return Math.round(clamp(score, 1, 5));
+// 最終評価 = 1〜5の整数に丸める
+return Math.round(Math.max(1, Math.min(5, baseScore)));
 ```
+
+**ポイント:** 単純な類似度だけでなく、顧客の性格特性を数式で表現することで、リアルな評価分布を実現しています。
 
 ### 3. トランザクション処理
 
@@ -295,38 +309,42 @@ await prisma.$transaction(async (tx) => {
 
 ### ER図
 
-```mermaid
-erDiagram
-    Seller ||--o{ Product : "出品"
-    Category ||--o{ Product : "分類"
-    Segment ||--o{ Customer : "所属"
-    Product ||--o{ Simulation : "対象"
-    Simulation ||--o{ PredictedReview : "生成"
-    Customer ||--o{ PredictedReview : "評価者"
+```
+┌─────────────┐       ┌─────────────────────────────────────────┐
+│   sellers   │       │              products                   │
+├─────────────┤       ├─────────────────────────────────────────┤
+│ 🔑 id       │──1:N─→│ 🔑 id                                   │
+│    name     │       │ 🔗 sellerId, categoryId                 │
+└─────────────┘       │    name, description                    │
+                      │ 📊 embedding (vector 384)               │
+┌─────────────┐       └──────────────────┬──────────────────────┘
+│ categories  │              ↑           │
+├─────────────┤              │           │ 1:N
+│ 🔑 id       │──────1:N─────┘           ↓
+│    name     │       ┌─────────────────────────────────────────┐
+└─────────────┘       │            simulations                  │
+                      ├─────────────────────────────────────────┤
+┌─────────────┐       │ 🔑 id                                   │
+│  segments   │       │ 🔗 productId                            │
+├─────────────┤       │    status, avgRating, conversionRate    │
+│ 🔑 id       │       └──────────────────┬──────────────────────┘
+│    name     │                          │ 1:N (CASCADE DELETE)
+└──────┬──────┘                          ↓
+       │ 1:N      ┌─────────────────────────────────────────────┐
+       ↓         │           predicted_reviews                 │
+┌─────────────────────────────────────┐─────────────────────────┤
+│           customers (10,000人)       │ 🔑 id                   │
+├─────────────────────────────────────┤ 🔗 simulationId         │
+│ 🔑 id                               │ 🔗 customerId           │
+│ 🔗 segmentId                        │    rating (1-5)         │
+│    name                             │    similarity           │
+│ 📊 profileVector (vector 5)         │    reviewText           │
+│ 📊 preferenceVector (vector 384)    └─────────────────────────┘
+└─────────────────────────────────────┘
+        ↑                    │
+        └────────1:N─────────┘
 
-    Customer {
-        int id PK
-        int segmentId FK
-        string name
-        vector5 profileVector "性格特性"
-        vector384 preferenceVector "嗜好ベクトル"
-    }
-
-    Product {
-        int id PK
-        string name
-        text description
-        vector384 embedding "説明文ベクトル"
-    }
-
-    PredictedReview {
-        int id PK
-        int simulationId FK
-        int customerId FK
-        int rating "1-5"
-        decimal similarity "類似度"
-        text reviewText "生成レビュー"
-    }
+凡例: 🔑 主キー  🔗 外部キー  📊 ベクトル型
 ```
 
 ### テーブル一覧（7テーブル・第3正規形）
@@ -434,6 +452,10 @@ prisma/
 | [VECTOR_SEARCH.md](docs/VECTOR_SEARCH.md) | ベクトル検索の仕組み |
 | [TRANSACTION.md](docs/TRANSACTION.md) | トランザクション設計 |
 | [PERFORMANCE.md](docs/PERFORMANCE.md) | パフォーマンスチューニング |
+| [MOTIVATION_GRAPH.md](docs/MOTIVATION_GRAPH.md) | ペルソナのモチベーショングラフ |
+| [STORYBOARD.md](docs/STORYBOARD.md) | 画面遷移のストーリーボード |
+| [DISASTER_RECOVERY.md](docs/DISASTER_RECOVERY.md) | RPO/RTO、バックアップ設計 |
+| [DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) | デモ動画の台本 |
 
 ---
 
@@ -473,27 +495,6 @@ prisma/
 | **transformers.js** ✅ | ローカルで実行可能、API費用なし、決定論的（同じ入力→同じ出力） |
 | OpenAI Embeddings API | API費用がかかる、レート制限あり |
 | 自作モデル | 開発工数が膨大 |
-
----
-
-## 🛠️ 開発プロセス
-
-### 開発期間
-
-| フェーズ | 期間 | 内容 |
-|---------|------|------|
-| 企画・設計 | 1日 | ペルソナ定義、ER図設計、技術選定 |
-| DB設計 | 1日 | スキーマ定義、正規化、マイグレーション |
-| バックエンド | 2日 | API実装、ベクトル検索、シミュレーションエンジン |
-| フロントエンド | 1日 | 入力画面、結果画面、グラフ表示 |
-| テスト・修正 | 1日 | デバッグ、パフォーマンス調整 |
-| **合計** | **約1週間** | |
-
-### 開発の進め方
-
-1. **設計ファースト**: まずER図とAPI設計を固めてから実装
-2. **ドキュメント駆動**: 設計書を先に書き、それに沿って実装
-3. **段階的な実装**: シード → API → フロントエンドの順で構築
 
 ---
 
