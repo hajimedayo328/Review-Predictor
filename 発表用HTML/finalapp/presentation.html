@@ -3,1151 +3,630 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Market Mirror - プレゼンテーション</title>
-    
+    <title>Review Predictor - プレゼンテーション</title>
+
     <!-- Reveal.js CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
-    
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700;800&display=swap');
-        
+
         :root {
-            --primary-blue: #0066FF;
-            --primary-blue-dark: #0052CC;
-            --accent-purple: #5856D6;
-            --accent-pink: #AF52DE;
+            --primary-blue: #3b82f6;
+            --primary-blue-dark: #2563eb;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
             --bg-white: #ffffff;
-            --bg-gray: #f5f5f7;
-            --bg-gray-light: #fafafa;
-            --text-primary: #1a1a1a;
-            --text-secondary: #6e6e73;
-            --text-tertiary: #86868b;
-            --border-light: #d2d2d7;
-            --border-subtle: #e5e5ea;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --bg-gray: #f8fafc;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
         }
-        
+
         .reveal {
-            font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
-            color: var(--text-primary);
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
         }
-        
+
         .reveal .slides section {
             text-align: left;
-            background: var(--bg-white);
-            padding: 4rem 5rem;
-            border-radius: 0;
-            box-shadow: var(--shadow-lg);
-            border: none;
+            padding: 3rem 4rem;
         }
-        
-        .reveal h1, .reveal h2, .reveal h3 {
-            font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            color: var(--text-primary);
-            margin-bottom: 2rem;
-            line-height: 1.2;
-        }
-        
+
         .reveal h1 {
-            font-size: 4rem;
+            font-size: 3.5rem;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
+            background: linear-gradient(135deg, var(--primary-blue), #8b5cf6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            border-bottom: none;
-            padding-bottom: 0;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
-        
+
         .reveal h2 {
-            font-size: 2.75rem;
+            font-size: 2.5rem;
             font-weight: 700;
             color: var(--text-primary);
             margin-bottom: 1.5rem;
+            border-bottom: 3px solid var(--primary-blue);
+            padding-bottom: 0.5rem;
         }
-        
+
         .reveal h3 {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 600;
-            color: var(--text-secondary);
-            margin-top: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .reveal p, .reveal li {
-            font-size: 1.25rem;
-            line-height: 1.75;
-            color: var(--text-secondary);
-            font-weight: 400;
-        }
-        
-        .reveal strong {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-        
-        .accent-blue {
             color: var(--primary-blue);
-            font-weight: 600;
         }
-        
-        .accent-purple {
-            color: var(--accent-purple);
-            font-weight: 600;
+
+        .reveal p, .reveal li {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
         }
-        
-        .accent-pink {
-            color: var(--accent-pink);
-            font-weight: 600;
-        }
-        
-        .code-block {
-            background: var(--bg-gray);
-            border: 1px solid var(--border-subtle);
-            border-radius: 0.75rem;
-            padding: 1.5rem 2rem;
-            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Courier New', monospace;
-            color: var(--text-primary);
-            font-size: 1rem;
-            margin: 1.5rem 0;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .tech-badge {
-            display: inline-block;
-            background: var(--bg-gray);
-            border: 1px solid var(--border-light);
-            color: var(--text-primary);
-            padding: 0.5rem 1.25rem;
-            border-radius: 1.5rem;
-            font-size: 0.9rem;
-            font-weight: 500;
-            margin: 0.25rem;
-            box-shadow: var(--shadow-sm);
-            transition: all 0.2s ease;
-        }
-        
-        .tech-badge:hover {
-            background: var(--bg-white);
-            box-shadow: var(--shadow-md);
-            transform: translateY(-1px);
-        }
-        
-        .demo-button {
-            display: inline-block;
-            background: var(--primary-blue);
-            color: white;
-            padding: 1.25rem 2.5rem;
-            border-radius: 1.5rem;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.25rem;
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow-md);
-            border: none;
-        }
-        
-        .demo-button:hover {
-            background: var(--primary-blue-dark);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        /* Prisma Studio button hover effect */
-        .reveal a[href="http://localhost:5555"]:hover {
-            background: var(--accent-purple);
-            opacity: 0.9;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        /* Back to Architecture button hover effect */
-        .reveal a[href="#/6"]:hover {
-            background-color: #f1f5f9;
-            border-color: #64748b;
-            color: #334155;
-        }
-        
-        .highlight-box {
-            background: linear-gradient(135deg, rgba(0, 102, 255, 0.05), rgba(88, 86, 214, 0.05));
-            border-left: 4px solid var(--primary-blue);
-            padding: 2rem;
-            margin: 2rem 0;
-            border-radius: 0.75rem;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .mermaid {
-            background: var(--bg-white);
-            padding: 2.5rem;
-            border-radius: 1rem;
-            border: 1px solid var(--border-subtle);
-            box-shadow: var(--shadow-sm);
-        }
-        
-        ul {
+
+        .reveal ul {
             list-style: none;
             padding-left: 0;
         }
-        
-        ul li {
-            position: relative;
-            padding-left: 1.5rem;
-            margin-bottom: 0.75rem;
-        }
-        
-        ul li::before {
+
+        .reveal ul li::before {
             content: "→";
-            position: absolute;
-            left: 0;
             color: var(--primary-blue);
-            font-weight: 600;
+            font-weight: bold;
+            margin-right: 0.5rem;
         }
-        
-        .author-info {
-            color: var(--text-tertiary);
-            font-size: 1.1rem;
-            margin-top: 3rem;
-            font-weight: 400;
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
         }
-        
-        .gradient-text {
-            background: linear-gradient(135deg, var(--primary-blue), var(--accent-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: 700;
-        }
-        
-        .number-highlight {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: var(--primary-blue);
-            letter-spacing: -0.02em;
-        }
-        
-        .step-box {
-            background: var(--bg-gray-light);
-            border: 1px solid var(--border-subtle);
-            padding: 1.5rem 2rem;
+
+        .highlight-box {
+            background: linear-gradient(135deg, #eff6ff, #f0fdf4);
+            border-left: 4px solid var(--primary-blue);
+            padding: 1rem 1.5rem;
             margin: 1rem 0;
-            border-radius: 0.75rem;
-            box-shadow: var(--shadow-sm);
-            transition: all 0.2s ease;
+            border-radius: 0 8px 8px 0;
         }
-        
-        .step-box:hover {
-            box-shadow: var(--shadow-md);
-            transform: translateX(4px);
-        }
-        
-        .step-number {
-            display: inline-block;
+
+        .stat-box {
             background: var(--primary-blue);
             color: white;
-            width: 2rem;
-            height: 2rem;
-            border-radius: 50%;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
             text-align: center;
-            line-height: 2rem;
+        }
+
+        .stat-box .number {
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+
+        .stat-box .label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .team-badge {
+            background: linear-gradient(135deg, var(--primary-blue), #8b5cf6);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+
+        .code-block .keyword { color: #c084fc; }
+        .code-block .string { color: #86efac; }
+        .code-block .comment { color: #64748b; }
+
+        .flow-arrow {
+            font-size: 2rem;
+            color: var(--primary-blue);
+        }
+
+        .persona-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
+        }
+
+        .persona-card h4 {
+            color: var(--primary-blue);
             font-weight: 700;
-            font-size: 1rem;
-            margin-right: 1rem;
-        }
-        
-        /* タイトルスライド用アニメーション */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-        
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        @keyframes zoomIn {
-            from {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        
-        /* 全スライド用アニメーション - 初期状態は非表示 */
-        .reveal .slides section.animate-on-load h2,
-        .reveal .slides section.animate-on-load h3,
-        .reveal .slides section.animate-on-load p,
-        .reveal .slides section.animate-on-load ul li,
-        .reveal .slides section.animate-on-load .step-box,
-        .reveal .slides section.animate-on-load .highlight-box,
-        .reveal .slides section.animate-on-load .mermaid,
-        .reveal .slides section.animate-on-load .code-block {
-            opacity: 0;
-        }
-        
-        /* スライドが表示された時にアニメーション */
-        .reveal .slides section.present.animate-on-load h2 {
-            animation: fadeInUp 0.8s ease-out forwards;
-        }
-        
-        .reveal .slides section.present.animate-on-load h3 {
-            animation: fadeInUp 0.8s ease-out 0.2s forwards;
-        }
-        
-        .reveal .slides section.present.animate-on-load p {
-            animation: fadeIn 0.8s ease-out 0.4s forwards;
-        }
-        
-        .reveal .slides section.present.animate-on-load ul li {
-            animation: slideInRight 0.6s ease-out forwards;
-        }
-        
-        .reveal .slides section.present.animate-on-load .step-box {
-            animation: slideInLeft 0.6s ease-out forwards;
-        }
-        
-        .reveal .slides section.present.animate-on-load .highlight-box {
-            animation: zoomIn 0.8s ease-out 0.3s forwards;
-        }
-        
-        .reveal .slides section.present.animate-on-load .mermaid {
-            animation: zoomIn 1s ease-out 0.5s forwards;
-        }
-        
-        .reveal .slides section.present.animate-on-load .code-block {
-            animation: fadeIn 0.8s ease-out 0.4s forwards;
-        }
-        
-        /* リストアイテムの遅延 */
-        .reveal .slides section.present.animate-on-load ul li:nth-child(1) { animation-delay: 0.5s; }
-        .reveal .slides section.present.animate-on-load ul li:nth-child(2) { animation-delay: 0.6s; }
-        .reveal .slides section.present.animate-on-load ul li:nth-child(3) { animation-delay: 0.7s; }
-        .reveal .slides section.present.animate-on-load ul li:nth-child(4) { animation-delay: 0.8s; }
-        .reveal .slides section.present.animate-on-load ul li:nth-child(5) { animation-delay: 0.9s; }
-        
-        /* step-boxの遅延 */
-        .reveal .slides section.present.animate-on-load .step-box:nth-of-type(1) { animation-delay: 0.5s; }
-        .reveal .slides section.present.animate-on-load .step-box:nth-of-type(2) { animation-delay: 0.6s; }
-        .reveal .slides section.present.animate-on-load .step-box:nth-of-type(3) { animation-delay: 0.7s; }
-        .reveal .slides section.present.animate-on-load .step-box:nth-of-type(4) { animation-delay: 0.8s; }
-        
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-        }
-        
-        .title-slide {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            padding: 4rem 5rem !important;
-        }
-        
-        .title-slide::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(0, 102, 255, 0.05) 0%, transparent 70%);
-            animation: pulse 8s ease-in-out infinite;
-            z-index: 0;
-        }
-        
-        .title-slide h1 {
-            animation: fadeInUp 1s ease-out;
-            position: relative;
-            z-index: 1;
-            font-size: 2.75rem;
-            margin-bottom: 1.5rem;
-            letter-spacing: -0.02em;
-        }
-        
-        .title-slide h2 {
-            animation: fadeInUp 1s ease-out 0.3s both;
-            position: relative;
-            z-index: 1;
-            margin-top: 1rem;
-            font-size: 1.75rem;
-            line-height: 1.75;
-        }
-        
-        .title-slide .tech-stack {
-            animation: fadeIn 1s ease-out 0.6s both;
-            position: relative;
-            z-index: 1;
-            margin-top: 5rem;
-        }
-        
-        .title-slide .tech-badge {
-            animation: slideInRight 0.6s ease-out both;
-            margin: 0.5rem;
-            font-size: 1rem;
-            padding: 0.75rem 1.5rem;
-            box-shadow: var(--shadow-md);
-        }
-        
-        .title-slide .tech-badge:hover {
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .title-slide .tech-badge:nth-child(1) { animation-delay: 0.8s; }
-        .title-slide .tech-badge:nth-child(2) { animation-delay: 0.9s; }
-        .title-slide .tech-badge:nth-child(3) { animation-delay: 1.0s; }
-        .title-slide .tech-badge:nth-child(4) { animation-delay: 1.1s; }
-        
-        .title-slide .decorative-circle {
-            position: absolute;
-            border-radius: 50%;
-            opacity: 0.1;
-            z-index: 0;
-        }
-        
-        .title-slide .circle-1 {
-            width: 300px;
-            height: 300px;
-            background: var(--primary-blue);
-            top: 10%;
-            left: 5%;
-            animation: pulse 6s ease-in-out infinite;
-        }
-        
-        .title-slide .circle-2 {
-            width: 200px;
-            height: 200px;
-            background: var(--accent-purple);
-            bottom: 15%;
-            right: 10%;
-            animation: pulse 8s ease-in-out infinite 1s;
-        }
-        
-        .title-slide .circle-3 {
-            width: 150px;
-            height: 150px;
-            background: var(--accent-pink);
-            top: 50%;
-            right: 20%;
-            animation: pulse 7s ease-in-out infinite 0.5s;
+            margin-bottom: 0.5rem;
         }
     </style>
 </head>
 <body>
     <div class="reveal">
         <div class="slides">
+
             <!-- スライド1: タイトル -->
-            <section class="title-slide">
-                <div class="decorative-circle circle-1"></div>
-                <div class="decorative-circle circle-2"></div>
-                <div class="decorative-circle circle-3"></div>
-                
-                <h1>Market Mirror</h1>
-                <h2 style="color: var(--text-secondary); font-weight: 400; margin-top: 1rem; max-width: 800px;">
-                    90人のペルソナによる「市場歪曲」シミュレーター
-                </h2>
-                
-                <div class="tech-stack">
-                    <div style="margin-bottom: 1rem; color: var(--text-tertiary); font-size: 1rem; font-weight: 500;">
-                        Built with
+            <section>
+                <div class="text-center">
+                    <div class="team-badge mb-8">チーム おでん</div>
+                    <h1 class="text-center">Review Predictor</h1>
+                    <p class="text-2xl text-gray-600 mt-4">
+                        新商品の説明文から、10,000人の仮想顧客が<br>
+                        どう評価するかを予測するシミュレーションツール
+                    </p>
+                    <div class="mt-12 text-gray-500">
+                        データベース 最終課題
+                    </div>
+                </div>
+            </section>
+
+            <!-- スライド2: メンバー紹介 -->
+            <section>
+                <h2>メンバー</h2>
+                <div class="grid grid-cols-2 gap-6 mt-8">
+                    <div class="card">
+                        <p class="text-gray-500 text-sm">2442001</p>
+                        <p class="text-xl font-bold text-gray-800">赤塩 甫</p>
+                    </div>
+                    <div class="card">
+                        <p class="text-gray-500 text-sm">2442003</p>
+                        <p class="text-xl font-bold text-gray-800">阿部 純太</p>
+                    </div>
+                    <div class="card">
+                        <p class="text-gray-500 text-sm">2442040</p>
+                        <p class="text-xl font-bold text-gray-800">シャリフ 大睦</p>
+                    </div>
+                    <div class="card">
+                        <p class="text-gray-500 text-sm">2442071</p>
+                        <p class="text-xl font-bold text-gray-800">服田 愛樹</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- スライド3: 解決したい課題 -->
+            <section>
+                <h2>解決したい課題</h2>
+                <div class="highlight-box text-xl">
+                    ECサイトで新商品を出品する際、<br>
+                    <strong class="text-2xl">「この商品は売れるのか？」</strong> という不安
+                </div>
+                <ul class="mt-8 space-y-4">
+                    <li>レビューがない新商品は購入されにくい</li>
+                    <li>実際に売り出すまで顧客の反応がわからない</li>
+                    <li>商品説明文の書き方で売上が大きく変わる</li>
+                </ul>
+            </section>
+
+            <!-- スライド4: 本システムのアプローチ -->
+            <section>
+                <h2>本システムのアプローチ</h2>
+                <div class="highlight-box text-xl mb-8">
+                    <strong>「売る前に、顧客の反応を予測できたら？」</strong>
+                </div>
+                <div class="flex items-center justify-center gap-4 text-lg">
+                    <div class="card text-center px-6">商品説明文</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="card text-center px-6">ベクトル化</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="card text-center px-6">10,000人と<br>類似度計算</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="card text-center px-6">評価予測</div>
+                    <span class="flow-arrow">→</span>
+                    <div class="card text-center px-6">統計表示</div>
+                </div>
+            </section>
+
+            <!-- スライド5: ペルソナ -->
+            <section>
+                <h2>ターゲットユーザー（ペルソナ）</h2>
+                <div class="grid grid-cols-3 gap-4 mt-6">
+                    <div class="persona-card">
+                        <h4>田中 美咲（32歳）</h4>
+                        <p class="text-sm text-gray-600">ハンドメイド作家</p>
+                        <p class="text-sm mt-2"><strong>悩み:</strong> 新作のレビューがつくまで売れない</p>
+                    </div>
+                    <div class="persona-card">
+                        <h4>鈴木 健太（28歳）</h4>
+                        <p class="text-sm text-gray-600">D2Cマーケター</p>
+                        <p class="text-sm mt-2"><strong>悩み:</strong> A/Bテストに時間がかかる</p>
+                    </div>
+                    <div class="persona-card">
+                        <h4>山田 太郎（45歳）</h4>
+                        <p class="text-sm text-gray-600">商品企画部長</p>
+                        <p class="text-sm mt-2"><strong>悩み:</strong> 売れる根拠を示せない</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- スライド6: システムアーキテクチャ -->
+            <section>
+                <h2>システムアーキテクチャ</h2>
+                <div class="grid grid-cols-3 gap-6 mt-6">
+                    <div class="card">
+                        <h3 class="text-lg mb-2">フロントエンド</h3>
+                        <ul class="text-sm space-y-1">
+                            <li>Next.js 14</li>
+                            <li>React + TypeScript</li>
+                            <li>Tailwind CSS</li>
+                            <li>Recharts</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3 class="text-lg mb-2">バックエンド</h3>
+                        <ul class="text-sm space-y-1">
+                            <li>Next.js API Routes</li>
+                            <li>Prisma ORM</li>
+                            <li>transformers.js</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3 class="text-lg mb-2">データベース</h3>
+                        <ul class="text-sm space-y-1">
+                            <li>PostgreSQL 15</li>
+                            <li>pgvector拡張</li>
+                            <li>HNSWインデックス</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- スライド7: なぜPostgreSQL + pgvectorか -->
+            <section>
+                <h2>技術選定の理由</h2>
+                <h3 class="mb-4">なぜ PostgreSQL + pgvector か？</h3>
+                <table>
+                    <tr>
+                        <th>選択肢</th>
+                        <th>検討結果</th>
+                    </tr>
+                    <tr>
+                        <td><strong class="text-green-600">PostgreSQL + pgvector ✓</strong></td>
+                        <td>RDB機能とベクトル検索を1つのDBで実現</td>
+                    </tr>
+                    <tr>
+                        <td>MySQL</td>
+                        <td>ベクトル検索の拡張がない</td>
+                    </tr>
+                    <tr>
+                        <td>MongoDB</td>
+                        <td>JOINが苦手、正規化の利点が活かせない</td>
+                    </tr>
+                    <tr>
+                        <td>専用VectorDB</td>
+                        <td>RDBと別管理、データ同期が複雑</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- スライド8: データベース設計 -->
+            <section>
+                <h2>データベース設計（ER図）</h2>
+                <div class="grid grid-cols-2 gap-8 mt-4">
+                    <div>
+                        <h3 class="mb-4">7テーブル構成</h3>
+                        <table class="text-sm">
+                            <tr><th>テーブル</th><th>レコード数</th></tr>
+                            <tr><td>sellers</td><td>1</td></tr>
+                            <tr><td>categories</td><td>5</td></tr>
+                            <tr><td>products</td><td>シミュレーション数</td></tr>
+                            <tr><td>segments</td><td>4</td></tr>
+                            <tr><td>customers</td><td class="font-bold text-blue-600">10,000</td></tr>
+                            <tr><td>simulations</td><td>実行数</td></tr>
+                            <tr><td>predicted_reviews</td><td>実行数 × 10,000</td></tr>
+                        </table>
                     </div>
                     <div>
-                        <span class="tech-badge">Next.js</span>
-                        <span class="tech-badge">Prisma</span>
-                        <span class="tech-badge">PostgreSQL</span>
-                        <span class="tech-badge">VectorDB</span>
+                        <h3 class="mb-4">リレーション</h3>
+                        <div class="code-block text-xs">
+Seller ||--o{ Product<br>
+Category ||--o{ Product<br>
+Segment ||--o{ Customer<br>
+Product ||--o{ Simulation<br>
+Simulation ||--o{ PredictedReview<br>
+Customer ||--o{ PredictedReview
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- スライド2: 課題 -->
+            <!-- スライド9: 正規化 -->
             <section>
-                <h2>課題：孤独な起業家の「迷い」</h2>
-                <h3>アイデアの実用性が、すぐに分からない</h3>
-                
-                <div class="highlight-box">
-                    <p style="font-size: 1.15rem; margin-bottom: 1rem;"><strong>主人公：ケンタ（24歳・開発者）</strong></p>
-                    <ul style="margin-top: 1rem;">
-                        <li>深夜に思いついた「最高のアイデア」。しかし翌朝には不安になる。</li>
-                        <li>「本当に需要はあるのか？ 作ってから失敗したら？」</li>
-                        <li>友人の「いいね」は優しい嘘。AIの肯定は無責任。</li>
-                    </ul>
+                <h2>正規化（第3正規形）</h2>
+                <div class="highlight-box mb-6">
+                    全7テーブルが<strong>第3正規形（3NF）</strong>を満たしている
                 </div>
-                
-                <p style="margin-top: 2.5rem; font-size: 1.5rem; color: var(--text-primary); font-weight: 600; line-height: 1.6;">
-                    欲しいのは、忖度のない<strong style="color: var(--primary-blue);">「市場の罵詈雑言」</strong>だ。
-                </p>
-            </section>
-
-            <!-- スライド3: 解決策 -->
-            <section>
-                <h2>解決策：90人の「仮想モニター」</h2>
-                <h3>3つの市場 × 30人の定規</h3>
-                
-                <ul style="margin-top: 2rem;">
-                    <li>ターゲットに合わせて「<span class="accent-blue">日本人</span>」「<span class="accent-purple">訪日外国人</span>」「<span class="accent-pink">ビジネス層</span>」を選択可能。</li>
-                    <li>合計<span class="number-highlight">90人</span>の人格をDBに完全固定。</li>
-                    <li>毎回変わるAIではなく、<strong>「常に同じ基準で測れる定規」</strong>として実装。</li>
-                </ul>
-                
-                <div class="code-block" style="margin-top: 2.5rem;">
-                    <div style="margin-bottom: 0.5rem;">Standard_Japan: 30人</div>
-                    <div style="margin-bottom: 0.5rem;">Inbound_Tourist: 30人</div>
-                    <div>Biz_Tech: 30人</div>
-                </div>
-            </section>
-
-            <!-- スライド4: 独自機能 -->
-            <section>
-                <h2>独自機能：人間的な「歪み」</h2>
-                <h3>Human Distortion Mode</h3>
-                
-                <div class="highlight-box" style="margin-top: 2rem;">
-                    <p style="margin-bottom: 0.5rem; color: var(--text-primary);">
-                        市場は論理（Logic）ではなく、<span class="accent-pink">ノイズ（Noise）</span>で動く。
-                    </p>
-                </div>
-                
-                <ul style="margin-top: 2.5rem;">
-                    <li><span class="accent-blue">同調圧力 (Social Pressure)</span> - インフルエンサーの意見に追随</li>
-                    <li><span class="accent-purple">感情バイアス (Emotional Bias)</span> - 気分で評価が変動</li>
-                    <li><span class="accent-pink">個人バイアス (Personal Bias)</span> - 主観的な好き嫌い</li>
-                    <li><span class="accent-blue">時間的コンテキスト (Temporal)</span> - 曜日・時間帯の影響</li>
-                </ul>
-                
-                <p style="margin-top: 2.5rem; color: var(--text-primary);">
-                    これらをスライダーで調整し、AIをあえて<strong>「不合理な人間」</strong>にする。
-                </p>
-            </section>
-
-            <!-- スライド5-1: ロジック（説明） -->
-            <section>
-                <h2 style="font-size: 2.75rem !important;">ロジック：動的シミュレーションエンジン</h2>
-                <h3 style="font-size: 1.75rem !important;">設定値による「思考回路」の動的生成</h3>
-                
-                <p style="margin-top: 2rem; color: var(--text-primary); font-size: 1.3rem;">
-                    単なるプロンプトエンジニアリングではない。スライダーの設定値 (<code style="background: var(--bg-gray); padding: 0.2rem 0.5rem; border-radius: 0.25rem; font-family: 'SF Mono', monospace; font-size: 1.15rem;">distortionWeights</code>) に応じて、Workerの実行ロジック自体が分岐する。
-                </p>
-                
-                <div style="margin-top: 2rem;">
-                    <div class="step-box" style="font-size: 1.2rem;">
-                        <strong style="color: var(--primary-blue);">Mode A: Social (同調)</strong> → インフルエンサー起点の「2段階伝播アルゴリズム」を実行。
+                <div class="grid grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="mb-2">正規化の確認</h3>
+                        <table class="text-sm">
+                            <tr><th>テーブル</th><th>1NF</th><th>2NF</th><th>3NF</th></tr>
+                            <tr><td>sellers</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                            <tr><td>categories</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                            <tr><td>products</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                            <tr><td>customers</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                            <tr><td>simulations</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                            <tr><td>predicted_reviews</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                        </table>
                     </div>
-                    <div class="step-box" style="font-size: 1.2rem;">
-                        <strong style="color: var(--accent-purple);">Mode B: Emotional (感情)</strong> → 乱数生成による「確率的ノイズ混入」を実行。
-                    </div>
-                    <div class="step-box" style="font-size: 1.2rem;">
-                        <strong style="color: var(--accent-pink);">Mode C: Bias (偏見)</strong> → ユーザー固有の「嗜好データ」を重み付けして適用。
-                    </div>
-                    <div class="step-box" style="font-size: 1.2rem;">
-                        <strong style="color: var(--primary-blue);">Mode D: Temporal (時間)</strong> → 曜日や時間帯（例: 月曜朝）のコンテキストを動的に注入。
+                    <div>
+                        <h3 class="mb-2">ポイント</h3>
+                        <ul class="text-sm space-y-2">
+                            <li>ベクトル型はpgvectorで原子的に扱う</li>
+                            <li>外部キーで推移的従属を排除</li>
+                            <li>avgRating等は計算キャッシュ</li>
+                        </ul>
                     </div>
                 </div>
-                
-                <p style="margin-top: 2rem; color: var(--text-primary); font-weight: 600; font-size: 1.3rem;">
-                    ユーザーは<strong>「どんな市場シミュレーションを行うか」</strong>をコードレベルで制御できる。
-                </p>
             </section>
 
-            <!-- スライド5-2: ロジック（フローチャート） -->
+            <!-- スライド10: 外部キー制約 -->
             <section>
-                <h2>ロジック：動的シミュレーションエンジン</h2>
-                <h3>実行フローの可視化</h3>
-                
-                <div class="mermaid" style="margin-top: 2rem; padding: 1.5rem; font-size: 0.7rem;">
-                    graph LR
-                        A[Input] --> B[Router]
-                        B --> C[Social Flow<br/>2段階伝播]
-                        B --> D[Emotional Flow<br/>確率ノイズ]
-                        B --> E[Bias Flow<br/>嗜好重み]
-                        B --> G[Temporal Flow<br/>時間コンテキスト]
-                        C --> F[Output]
-                        D --> F
-                        E --> F
-                        G --> F
-                        
-                        style A fill:#0066FF,stroke:#0066FF,stroke-width:2px,color:#fff
-                        style B fill:#5856D6,stroke:#5856D6,stroke-width:2px,color:#fff
-                        style C fill:#0066FF,stroke:#0066FF,stroke-width:2px,color:#fff
-                        style D fill:#AF52DE,stroke:#AF52DE,stroke-width:2px,color:#fff
-                        style E fill:#AF52DE,stroke:#AF52DE,stroke-width:2px,color:#fff
-                        style G fill:#0066FF,stroke:#0066FF,stroke-width:2px,color:#fff
-                        style F fill:#5856D6,stroke:#5856D6,stroke-width:2px,color:#fff
-                </div>
-            </section>
-
-            <!-- スライド6-1: 技術構成（説明） -->
-            <section>
-                <h2>技術構成：完全非同期システム</h2>
-                <h3>90秒の思考を支えるアーキテクチャ</h3>
-                
-                <ul style="margin-top: 2rem;">
-                    <li>ユーザー体験を損なわない <span class="accent-blue">Job Queue & Worker</span> 構成。</li>
-                    <li>ブラウザを閉じても処理は完遂される。</li>
-                    <li>バッチ処理（10人ずつ）でDB接続プールを保護。</li>
-                </ul>
-                
-                <div class="highlight-box" style="margin-top: 3rem;">
-                    <p style="color: var(--text-primary);">
-                        <strong>非同期処理</strong>により、90人のペルソナ評価をバックグラウンドで実行。<br>
-                        ユーザーは待機画面で進捗を確認し、完了後に詳細なレポートを閲覧できる。
-                    </p>
-                </div>
-            </section>
-
-            <!-- スライド6-2: 技術構成（ER図） -->
-            <section>
-                <h2>技術構成：完全非同期システム</h2>
-                <h3>DB設計の証拠 (ER図)</h3>
-                
-                <div class="mermaid" style="margin-top: 2rem; padding: 1.5rem; font-size: 0.75rem;">
-                    erDiagram
-                        Persona ||--o{ Review : evaluates
-                        Idea ||--o{ Review : receives
-                        Idea ||--o{ AnalysisJob : generates
-                        
-                        Persona {
-                            int id PK
-                            string name
-                            string category
-                            string personality
-                        }
-                        
-                        Idea {
-                            int id PK
-                            string title
-                            string category
-                            vector embedding
-                        }
-                        
-                        Review {
-                            int id PK
-                            int ideaId FK
-                            int personaId FK
-                            int score
-                            boolean willBuy
-                        }
-                        
-                        AnalysisJob {
-                            int id PK
-                            int ideaId FK
-                            string status
-                            json distortionWeights
-                        }
-                </div>
-                
-                <div style="margin-top: 2.5rem; text-align: center;">
-                    <a href="http://localhost:5555" target="_blank" style="display: inline-block; padding: 0.875rem 2rem; font-size: 1rem; background: var(--accent-purple); color: white; border-radius: 0.5rem; text-decoration: none; transition: all 0.3s ease; font-weight: 600; box-shadow: var(--shadow-md);">
-                        Open Live Data (Prisma Studio) 🚀
-                    </a>
-                </div>
-            </section>
-
-            <!-- スライド7: デモ -->
-            <section>
-                <h2>実演</h2>
-                <h3>Live Demo</h3>
-                
-                <div style="margin-top: 5rem; text-align: center;">
-                    <a href="http://localhost:3000" class="demo-button" target="_blank" style="color: white !important;">
-                        🚀 アプリを起動
-                    </a>
-                </div>
-                
-                <div style="margin-top: 3rem; text-align: center; color: var(--text-tertiary);">
-                    <p style="font-size: 1.1rem; font-weight: 400;">http://localhost:3000</p>
-                </div>
-            </section>
-
-            <!-- スライド8: 展望 -->
-            <section>
-                <h2>展望：1000人の「仮想都市」へ</h2>
-                <h3>スケーラビリティと未来</h3>
-                
-                <ul style="margin-top: 2rem;">
-                    <li>DBのレコードを追加するだけで、<span class="number-highlight">1,000人〜10,000人</span>規模へ拡張可能。</li>
-                    <li>企業ごとの<span class="accent-purple">「カスタムペルソナ」</span>作成機能。</li>
-                    <li>リリース前の<span class="accent-pink">「仮想炎上テスト」</span>インフラを目指す。</li>
-                </ul>
-                
-                <div class="highlight-box" style="margin-top: 3rem;">
-                    <p style="font-size: 1.4rem; color: var(--text-primary); font-weight: 500;">
-                        <strong style="color: var(--primary-blue);">VectorDBによる類似アイデア検索</strong>で、過去の失敗パターンを学習。
-                    </p>
-                </div>
-                
-                <div style="margin-top: 3rem; text-align: center;">
-                    <p style="font-size: 1.3rem; color: var(--text-secondary); font-weight: 400; line-height: 1.8;">
-                        市場の「歪み」を数値化し、<br>
-                        起業家の「迷い」を解消する。
-                    </p>
-                </div>
-            </section>
-
-            <!-- スライド9: Appendix A - Data Schema -->
-            <section>
-                <h2 style="font-size: 2rem !important;">Appendix A: DB Schema (Prisma)</h2>
-                <h3 style="font-size: 1.3rem !important;">動的パラメータのための柔軟なJSONストレージ</h3>
-                
-                <div style="background: var(--bg-gray); border-radius: 0.5rem; padding: 1.5rem; margin-top: 1.5rem; overflow-x: auto;">
-                    <pre style="margin: 0; font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace; font-size: 0.8rem; line-height: 1.5; color: var(--text-primary);"><code>// schema.prisma
-// 90人の思考を支えるスキーマ定義
-
-// 1. 分析ジョブ管理テーブル
-// ★重要: 歪み設定をJSON型で柔軟に保存することで、
-// 将来的に新しい歪みモードを追加してもスキーマ変更が不要
-model AnalysisJob {
-  id                String    @id @default(uuid())
-  ideaId            Int
-  status            String    @default("PENDING") @db.VarChar(20)
-  currentStep       Int       @default(0)  // 現在処理中のペルソナ数
-  totalSteps        Int       @default(90) // 総ペルソナ数
-  
-  // ★重要: 歪み設定をJSONで柔軟に保存
-  // { social: 80, emotional: 30, bias: 20, temporal: 10 } のような形式
-  distortionWeights Json?
-  
-  influencerMode    Boolean   @default(false)  // 同調圧力モードON/OFF
-  influencerResults Json?    // インフルエンサー3人の評価結果
-  result            Json?     // 全ペルソナの評価結果（完了時）
-  error             String?   // エラーメッセージ（失敗時）
-  
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  startedAt         DateTime? // 処理開始時刻
-  completedAt       DateTime? // 処理完了時刻
-  
-  idea              Idea      @relation(fields: [ideaId], references: [id])
-  
-  // パフォーマンス最適化のためのインデックス
-  @@index([ideaId])           // アイデアIDでの検索を高速化
-  @@index([status, createdAt]) // ステータスと作成日時での並び替えを高速化
+                <h2>外部キー制約</h2>
+                <div class="code-block mb-6">
+<span class="comment">-- prisma/schema.prisma より</span><br><br>
+<span class="keyword">model</span> PredictedReview {<br>
+&nbsp;&nbsp;simulation Simulation <span class="keyword">@relation</span>(<span class="string">onDelete: Cascade</span>)<br>
+&nbsp;&nbsp;<span class="comment">// → シミュレーション削除時に予測レビューも自動削除</span><br>
 }
-
-// 2. ペルソナテーブル（90人の仮想ユーザー）
-// カテゴリ別に分類: "Standard_Japan", "Inbound_Tourist", "Biz_Tech"
-model Persona {
-  id             Int      @id @default(autoincrement())
-  name           String   @db.VarChar(100)
-  category       String   @db.VarChar(100)  // カテゴリでフィルタリング可能
-  personality    String   // 性格特性（AI評価に使用）
-  age            Int
-  occupation     String
-  // ... その他の属性フィールド
-  
-  reviews        Review[]  // このペルソナが行った評価の一覧
-  
-  @@index([category])  // カテゴリでの検索を高速化
-}
-
-// 3. アイデアテーブル
-model Idea {
-  id               Int           @id @default(autoincrement())
-  title            String        @db.VarChar(200)
-  description      String
-  
-  // VectorDB用の埋め込みベクトル（OpenAI embedding: 1536次元）
-  // pgvector拡張機能を使用して類似度検索を実現
-  embedding        Unsupported("vector(1536)")?
-  
-  reviews          Review[]      // このアイデアに対する評価の一覧
-  analysisJobs     AnalysisJob[] // このアイデアの分析ジョブ履歴
-  
-  @@index([category])  // カテゴリでの検索を高速化
-}</code></pre>
                 </div>
-                
-                <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-gray-light); border-radius: 0.5rem; border-left: 4px solid var(--primary-blue);">
-                    <p style="margin: 0; color: var(--text-primary); font-size: 0.95rem; line-height: 1.5;">
-                        <strong style="color: var(--primary-blue);">Key Design:</strong><br>
-                        • <code style="background: var(--bg-gray); padding: 0.15rem 0.3rem; border-radius: 0.25rem; font-family: 'SF Mono', monospace; font-size: 0.85rem;">distortionWeights Json?</code> で動的パラメータを柔軟に保存<br>
-                        • <code style="background: var(--bg-gray); padding: 0.15rem 0.3rem; border-radius: 0.25rem; font-family: 'SF Mono', monospace; font-size: 0.85rem;">embedding vector(1536)</code> で VectorDB による類似検索を実現<br>
-                        • 外部キー制約とインデックスでパフォーマンスと整合性を保証
-                    </p>
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="card">
+                        <h3 class="text-lg mb-2">CASCADE DELETE</h3>
+                        <p class="text-sm text-gray-600">
+                            シミュレーションを削除すると、<br>
+                            紐づく10,000件のレビューも自動削除
+                        </p>
+                    </div>
+                    <div class="card">
+                        <h3 class="text-lg mb-2">参照整合性</h3>
+                        <p class="text-sm text-gray-600">
+                            存在しない商品・顧客への<br>
+                            レビュー作成を防止
+                        </p>
+                    </div>
                 </div>
             </section>
 
-            <!-- スライド10: Appendix B - Simulation Logic -->
+            <!-- スライド11: トランザクション -->
             <section>
-                <h2 style="font-size: 2rem !important;">Appendix B: Core Logic (Worker)</h2>
-                <h3 style="font-size: 1.3rem !important;">歪み設定に基づく動的分岐</h3>
-                
-                <div style="background: var(--bg-gray); border-radius: 0.5rem; padding: 1.5rem; margin-top: 1.5rem; overflow-x: auto;">
-                    <pre style="margin: 0; font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace; font-size: 0.8rem; line-height: 1.5; color: var(--text-primary);"><code>// worker.ts (Simulation Engine)
-// 90人のペルソナ評価を非同期で実行するWorker
-
-// 1. ジョブ情報をDBから取得
-async function processJob(jobId: string): Promise&lt;void&gt; {
-  const job = await dbClient.analysisJob.findUnique({
-    where: { id: jobId },
-    include: { idea: true }  // アイデア情報も一緒に取得
-  });
-  
-  const { idea, distortionWeights: rawWeights } = job;
-  
-  // 2. Distortion Weightsを安全に取得（デフォルト値設定）
-  // JSON型からTypeScriptの型に変換し、未設定の場合は0を設定
-  const distortionWeights = rawWeights ? {
-    social: (rawWeights as any).social || 0,      // 同調圧力 (0-100)
-    emotional: (rawWeights as any).emotional || 0, // 感情 (0-100)
-    bias: (rawWeights as any).bias || 0,          // 偏見 (0-100)
-    temporal: (rawWeights as any).temporal || 0,   // 時間 (0-100)
-  } : { social: 0, emotional: 0, bias: 0, temporal: 0 };
-
-  // 3. 【重要】パラメータに基づいて思考回路を動的に分岐
-  // 単なるプロンプトエンジニアリングではなく、アルゴリズムレベルでの分岐
-  if (distortionWeights.social > 0.8) {
-    // 同調圧力モード: 2段階伝播アルゴリズムを実行
-    // Step 1: インフルエンサー3人を先に評価
-    // Step 2: その結果を「場の空気」として残り87人に注入
-    return await executePropagationAlgorithm(job, distortionWeights);
-  } else if (distortionWeights.emotional > 0.7) {
-    // 感情モード: 確率的ノイズ混入アルゴリズムを実行
-    // 乱数生成により、論理的な評価に感情的な揺らぎを加える
-    return await executeEmotionalBias(job, distortionWeights);
-  } else {
-    // 通常モード: 標準ロジック（歪みなし、純粋な論理評価）
-    return await executeStandardLogic(job, distortionWeights);
-  }
-}
-
-// 4. 歪みプロンプト生成関数
-// AIに送るシステムプロンプトに、歪み設定を反映させる
-function generateDistortionPrompts(
-  weights: DistortionWeights,
-  contextFromInfluencers?: string
-): string {
-  const prompts: string[] = [];
-  
-  // Social Pressure: インフルエンサーの意見に同調させる
-  if (weights.social > 0 && contextFromInfluencers) {
-    prompts.push(
-      `【重要】あなたは周囲の空気を読む日本人です。` +
-      `先行するインフルエンサーの意見に対し、**${weights.social}%** の強さで同調してください。` +
-      `\n参考: ${contextFromInfluencers}`
-    );
-  }
-  
-  // Emotional: 感情的な評価を促す
-  if (weights.emotional > 0) {
-    const moods = ['機嫌が良い', '少しイライラしている', 'テンションが高い', '疲れている'];
-    const mood = moods[Math.floor(Math.random() * moods.length)];
-    prompts.push(
-      `【重要】今のあなたは論理的ではありません。現在の気分は「${mood}」です。` +
-      `**${weights.emotional}%** の割合で、その時の気分で評価を決めてください。`
-    );
-  }
-  
-  // Bias: 個人的な好みを強く反映
-  if (weights.bias > 0) {
-    prompts.push(
-      `【重要】あなたの個人的な好みを、通常より **${weights.bias}%** 強く反映させてください。`
-    );
-  }
-  
-  return prompts.join('\n');
-}</code></pre>
-                </div>
-                
-                <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-gray-light); border-radius: 0.5rem; border-left: 4px solid var(--accent-purple);">
-                    <p style="margin: 0; color: var(--text-primary); font-size: 0.95rem; line-height: 1.5;">
-                        <strong style="color: var(--accent-purple);">Core Concept:</strong><br>
-                        • スライダーの設定値に応じて、Workerの実行ロジック自体が分岐<br>
-                        • 単なるプロンプトエンジニアリングではなく、<strong>アルゴリズムレベル</strong>での動的制御<br>
-                        • ユーザーは「どんな市場シミュレーションを行うか」をコードレベルで制御可能
-                    </p>
+                <h2>トランザクション（原子性）</h2>
+                <div class="code-block text-sm mb-6">
+<span class="comment">// 商品とシミュレーションを1つのトランザクションで作成</span><br>
+<span class="keyword">const</span> result = <span class="keyword">await</span> prisma.<span class="keyword">$transaction</span>(<span class="keyword">async</span> (tx) => {<br>
+&nbsp;&nbsp;<span class="comment">// 1. 商品を作成</span><br>
+&nbsp;&nbsp;<span class="keyword">await</span> tx.$executeRawUnsafe(<span class="string">`INSERT INTO products ...`</span>);<br><br>
+&nbsp;&nbsp;<span class="comment">// 2. シミュレーションを作成</span><br>
+&nbsp;&nbsp;<span class="keyword">const</span> simulation = <span class="keyword">await</span> tx.simulation.create({...});<br><br>
+&nbsp;&nbsp;<span class="keyword">return</span> { productId, simulationId };<br>
+});<br>
+<span class="comment">// → どちらかが失敗したら両方ロールバック</span>
                 </div>
             </section>
 
-            <!-- スライド11: Appendix C - VectorDB Integration -->
+            <!-- スライド12: ベクトル検索 -->
             <section>
-                <h2 style="font-size: 2rem !important;">Appendix C: VectorDB Integration</h2>
-                <h3 style="font-size: 1.3rem !important;">pgvectorによるセマンティック類似検索</h3>
-                
-                <div style="background: var(--bg-gray); border-radius: 0.5rem; padding: 1.5rem; margin-top: 1.5rem; overflow-x: auto;">
-                    <pre style="margin: 0; font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace; font-size: 0.8rem; line-height: 1.5; color: var(--text-primary);"><code>// vector-search.ts
-// 類似アイデア検索の実装（pgvector拡張機能を使用）
-
-// 1. ターゲットアイデアの埋め込みベクトルを取得
-async function findSimilarIdeas(
-  targetIdeaId: number,
-  limit: number = 5
-): Promise&lt;Idea[]&gt; {
-  const targetIdea = await dbClient.idea.findUnique({
-    where: { id: targetIdeaId },
-    select: { embedding: true }  // 埋め込みベクトルのみ取得
-  });
-  
-  // 2. 埋め込みベクトルが存在しない場合は空配列を返す
-  if (!targetIdea?.embedding) {
-    return [];
-  }
-  
-  // 3. 【重要】pgvector によるコサイン類似度検索
-  // <=> 演算子はコサイン距離を計算（距離が小さいほど類似）
-  // 1 - (距離) で類似度に変換（1に近いほど類似）
-  const similarIdeas = await dbClient.$queryRaw&lt;Idea[]&gt;`
-    SELECT 
-      id, title, description, category,
-      1 - (embedding <=> ${targetIdea.embedding}::vector) as similarity
-    FROM ideas
-    WHERE id != ${targetIdeaId}              -- 自分自身は除外
-      AND embedding IS NOT NULL              -- 埋め込みベクトルが存在するもののみ
-    ORDER BY embedding <=> ${targetIdea.embedding}::vector  -- 距離でソート（近い順）
-    LIMIT ${limit}                           -- 上位N件を取得
-  `;
-  
-  return similarIdeas;
-}
-
-// 4. 埋め込みベクトルの生成（OpenAI API使用例）
-async function generateEmbedding(text: string): Promise&lt;number[]&gt; {
-  const response = await openai.embeddings.create({
-    model: 'text-embedding-ada-002',
-    input: text  // アイデアのタイトル + 説明文
-  });
-  return response.data[0].embedding;  // 1536次元のベクトル
-}
-
-// 5. スキーマ定義（Prisma）
-model Idea {
-  id               Int           @id @default(autoincrement())
-  title            String        @db.VarChar(200)
-  description      String
-  
-  // VectorDB用の埋め込みベクトル（OpenAI embedding: 1536次元）
-  // pgvector拡張機能により、PostgreSQL内でベクトル演算が可能
-  embedding        Unsupported("vector(1536)")?
-  
-  reviews          Review[]
-  analysisJobs     AnalysisJob[]
-}</code></pre>
+                <h2>ベクトル類似度検索（pgvector）</h2>
+                <div class="code-block text-sm mb-6">
+<span class="comment">-- コサイン距離演算子 <=> を使用</span><br>
+<span class="keyword">SELECT</span><br>
+&nbsp;&nbsp;c.id,<br>
+&nbsp;&nbsp;(1 - (c."preferenceVector" <span class="string"><=></span> $1::vector(384))) <span class="keyword">as</span> similarity<br>
+<span class="keyword">FROM</span> customers c<br>
+<span class="keyword">ORDER BY</span> c."preferenceVector" <span class="string"><=></span> $1::vector(384)<br>
+<span class="keyword">LIMIT</span> 10000;
                 </div>
-                
-                <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-gray-light); border-radius: 0.5rem; border-left: 4px solid var(--accent-pink);">
-                    <p style="margin: 0; color: var(--text-primary); font-size: 0.95rem; line-height: 1.5;">
-                        <strong style="color: var(--accent-pink);">Benefits:</strong><br>
-                        • 過去の失敗パターンを学習し、類似アイデアの評価を参照可能<br>
-                        • セマンティック検索により、キーワードマッチングを超えた類似性判定<br>
-                        • PostgreSQL の拡張機能（pgvector）で、追加インフラ不要
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="stat-box">
+                        <div class="number">O(log n)</div>
+                        <div class="label">HNSWインデックスの計算量</div>
+                    </div>
+                    <div class="stat-box" style="background: #10b981;">
+                        <div class="number">~10ms</div>
+                        <div class="label">10,000件の検索時間</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- スライド13: パフォーマンス最適化 -->
+            <section>
+                <h2>パフォーマンス最適化</h2>
+                <h3 class="mb-4">バッチINSERT</h3>
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="card" style="border-left: 4px solid #ef4444;">
+                        <h4 class="text-red-500 font-bold mb-2">❌ 悪い例</h4>
+                        <p class="text-sm">1件ずつINSERT<br>→ 10,000回のINSERT</p>
+                    </div>
+                    <div class="card" style="border-left: 4px solid #10b981;">
+                        <h4 class="text-green-500 font-bold mb-2">✓ 採用した方法</h4>
+                        <p class="text-sm">1,000件ずつバッチ<br>→ 10回のINSERT</p>
+                    </div>
+                </div>
+                <table class="mt-6 text-sm">
+                    <tr><th>処理</th><th>目標</th><th>実測</th></tr>
+                    <tr><td>ベクトル検索</td><td>< 100ms</td><td class="text-green-600">~13ms</td></tr>
+                    <tr><td>バッチINSERT</td><td>< 5000ms</td><td class="text-green-600">~3000ms</td></tr>
+                    <tr><td>合計</td><td>< 10秒</td><td class="text-green-600 font-bold">~5秒</td></tr>
+                </table>
+            </section>
+
+            <!-- スライド14: 授業要件対応 -->
+            <section>
+                <h2>授業要件への対応</h2>
+                <table class="text-sm">
+                    <tr><th>授業回</th><th>テーマ</th><th>本システムでの実装</th></tr>
+                    <tr><td>#2</td><td>Disk and File</td><td>pgvectorのHNSWインデックス</td></tr>
+                    <tr><td>#3</td><td>RDB Table</td><td>7テーブルの正規化設計</td></tr>
+                    <tr><td>#4</td><td>SQL, Transaction</td><td>シミュレーション実行のACID保証</td></tr>
+                    <tr><td>#5</td><td>FK, JOIN, SubQuery</td><td>セグメント別集計の複合クエリ</td></tr>
+                    <tr><td>#8</td><td>正規化, DB Tuning</td><td>第3正規形 + EXPLAIN ANALYZE</td></tr>
+                    <tr><td>#10</td><td>分散DB</td><td>Read Replicaアーキテクチャ設計</td></tr>
+                    <tr><td>#11</td><td>Vector DB</td><td><strong>pgvectorによるベクトル類似度検索</strong></td></tr>
+                </table>
+            </section>
+
+            <!-- スライド15: デモ -->
+            <section>
+                <h2>デモンストレーション</h2>
+                <div class="text-center mt-12">
+                    <div class="stat-box inline-block px-12 py-8">
+                        <div class="number">DEMO</div>
+                        <div class="label">実際にシミュレーションを実行します</div>
+                    </div>
+                </div>
+                <div class="mt-12 text-center">
+                    <p class="text-gray-600">
+                        1. 商品説明文を入力<br>
+                        2. シミュレーション実行<br>
+                        3. 結果画面で評価分布・セグメント分析を確認
                     </p>
                 </div>
             </section>
 
-            <!-- スライド12: Appendix D - Async Architecture -->
-            <section id="async-code">
-                <h2 style="font-size: 2rem !important;">Appendix D: Complete Async Pattern</h2>
-                <h3 style="font-size: 1.3rem !important;">Fire-and-forget（撃ちっ放し）実装</h3>
-                
-                <div style="background: var(--bg-gray); border-radius: 0.5rem; padding: 1.5rem; margin-top: 1.5rem; overflow-x: auto;">
-                    <pre style="margin: 0; font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace; font-size: 0.8rem; line-height: 1.5; color: var(--text-primary);"><code>// actions.ts (Server Action)
-
-export async function createAnalysisAction(formData: FormData) {
-  // 1. ユーザー入力を取得
-  const weights = parseSliders(formData);
-
-  // 2. DBにジョブを作成 (Pending状態)
-  const job = await prisma.analysisJob.create({
-    data: { 
-      status: 'PENDING', 
-      distortionWeights: weights,
-      ideaId: parseInt(formData.get('ideaId') as string)
-    }
-  });
-
-  // 3. 【重要】Workerをトリガー (Fire-and-forget)
-  // ★ ここにあえて 'await' を付けない！
-  // 結果を待たずに即座に次の行へ進むため、ブロッキングが発生しない。
-  // エラーハンドリングは .catch() で行う。
-  triggerBackgroundWorker(job.id).catch(console.error);
-  
-  // 4. ユーザーには即座にレスポンスを返す (待ち時間 0秒)
-  // 90人のペルソナ評価はバックグラウンドで非同期実行される
-  return { 
-    success: true, 
-    jobId: job.id,
-    message: "Simulation started 🚀" 
-  };
-}
-
-// Workerトリガー関数（非同期処理を開始するだけ）
-async function triggerBackgroundWorker(jobId: string) {
-  // API Route を呼び出してWorkerを起動
-  // この関数自体も await されないため、即座に返る
-  fetch('/api/worker/process-queue', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ jobId })
-  }).catch(err => {
-    console.error('Failed to trigger worker:', err);
-  });
-}</code></pre>
+            <!-- スライド16: AI活用 -->
+            <section>
+                <h2>AI（Claude Code）の活用</h2>
+                <div class="grid grid-cols-2 gap-6 mt-6">
+                    <div>
+                        <h3 class="mb-4">AIが担当</h3>
+                        <ul class="space-y-2 text-sm">
+                            <li>スキーマ設計のレビュー</li>
+                            <li>コード実装の補助</li>
+                            <li>ドキュメント作成</li>
+                            <li>デバッグ支援</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="mb-4">人間が判断</h3>
+                        <ul class="space-y-2 text-sm">
+                            <li>ペルソナ設計</li>
+                            <li>評価予測アルゴリズム</li>
+                            <li>UI/UXデザイン</li>
+                            <li>技術選定</li>
+                        </ul>
+                    </div>
                 </div>
-                
-                <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-gray-light); border-radius: 0.5rem; border-left: 4px solid var(--primary-blue);">
-                    <p style="margin: 0; color: var(--text-primary); font-size: 0.95rem; line-height: 1.5;">
-                        <strong style="color: var(--primary-blue);">Key Pattern:</strong><br>
-                        • <code style="background: var(--bg-gray); padding: 0.15rem 0.3rem; border-radius: 0.25rem; font-family: 'SF Mono', monospace; font-size: 0.85rem;">await</code> を意図的に外すことで、ユーザーは即座にレスポンスを受け取れる<br>
-                        • 90人のペルソナ評価はバックグラウンドで非同期実行され、進捗はポーリングで確認<br>
-                        • ブラウザを閉じても処理は継続され、完了後にレポートを閲覧可能
+                <div class="highlight-box mt-8">
+                    <strong>学び:</strong> AIは効率化ツール。設計の意思決定は人間が行う。
+                </div>
+            </section>
+
+            <!-- スライド17: 開発プロセス -->
+            <section>
+                <h2>開発プロセス</h2>
+                <div class="grid grid-cols-5 gap-4 mt-8">
+                    <div class="card text-center">
+                        <div class="text-2xl font-bold text-blue-600">1日</div>
+                        <div class="text-sm text-gray-600 mt-2">企画・設計</div>
+                    </div>
+                    <div class="card text-center">
+                        <div class="text-2xl font-bold text-blue-600">1日</div>
+                        <div class="text-sm text-gray-600 mt-2">DB設計</div>
+                    </div>
+                    <div class="card text-center">
+                        <div class="text-2xl font-bold text-blue-600">2日</div>
+                        <div class="text-sm text-gray-600 mt-2">バックエンド</div>
+                    </div>
+                    <div class="card text-center">
+                        <div class="text-2xl font-bold text-blue-600">1日</div>
+                        <div class="text-sm text-gray-600 mt-2">フロント</div>
+                    </div>
+                    <div class="card text-center">
+                        <div class="text-2xl font-bold text-blue-600">1日</div>
+                        <div class="text-sm text-gray-600 mt-2">テスト</div>
+                    </div>
+                </div>
+                <div class="text-center mt-8">
+                    <div class="stat-box inline-block px-8">
+                        <div class="number">約1週間</div>
+                        <div class="label">総開発期間</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- スライド18: まとめ -->
+            <section>
+                <h2>まとめ</h2>
+                <div class="grid grid-cols-2 gap-6 mt-6">
+                    <div class="card">
+                        <h3 class="text-lg mb-4">実装したこと</h3>
+                        <ul class="text-sm space-y-2">
+                            <li>10,000人の仮想顧客シミュレーション</li>
+                            <li>pgvectorによるベクトル類似度検索</li>
+                            <li>第3正規形のDB設計</li>
+                            <li>トランザクションによるACID保証</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3 class="text-lg mb-4">学んだこと</h3>
+                        <ul class="text-sm space-y-2">
+                            <li>RDBとベクトルDBの融合</li>
+                            <li>正規化の実践的な適用</li>
+                            <li>パフォーマンス最適化</li>
+                            <li>AIとの協働開発</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- スライド19: ありがとうございました -->
+            <section>
+                <div class="text-center">
+                    <h1 class="text-center">ご清聴ありがとうございました</h1>
+                    <div class="mt-12">
+                        <div class="team-badge">チーム おでん</div>
+                    </div>
+                    <p class="text-gray-500 mt-8">
+                        質問をお待ちしております
                     </p>
                 </div>
             </section>
+
         </div>
     </div>
 
-    <!-- Reveal.js CDN -->
+    <!-- Reveal.js -->
     <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
-    
-    <script type="module">
-        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-        
-        mermaid.initialize({ 
-            startOnLoad: false,
-            theme: 'default',
-            themeVariables: {
-                primaryColor: '#0066FF',
-                primaryTextColor: '#1a1a1a',
-                primaryBorderColor: '#0066FF',
-                lineColor: '#0066FF',
-                secondaryColor: '#5856D6',
-                tertiaryColor: '#AF52DE',
-                background: '#ffffff',
-                mainBkgColor: '#ffffff',
-                secondBkgColor: '#f5f5f7',
-                textColor: '#1a1a1a'
-            }
-        });
-        
+    <script>
         Reveal.initialize({
             hash: true,
-            controls: true,
-            progress: true,
-            center: false,
+            slideNumber: true,
             transition: 'slide',
-            backgroundTransition: 'fade',
             width: 1280,
             height: 720,
             margin: 0.1,
-            minScale: 0.2,
-            maxScale: 1.5
         });
-        
-        // Mermaidをレンダリングする関数
-        async function renderMermaid() {
-            const mermaidElements = document.querySelectorAll('.mermaid:not([data-processed])');
-            if (mermaidElements.length === 0) return;
-            
-            // 個別にレンダリング（より確実）
-            for (const element of mermaidElements) {
-                try {
-                    const id = 'mermaid-' + Math.random().toString(36).substr(2, 9);
-                    const graphDefinition = element.textContent.trim();
-                    
-                    if (!graphDefinition) {
-                        console.warn('Empty mermaid definition');
-                        continue;
-                    }
-                    
-                    // レンダリング
-                    const { svg } = await mermaid.render(id, graphDefinition);
-                    element.innerHTML = svg;
-                    element.setAttribute('data-processed', 'true');
-                } catch (err) {
-                    console.error('Mermaid rendering error:', err, element.textContent.substring(0, 50));
-                    // エラー時も処理済みマークを付けて無限ループを防ぐ
-                    element.setAttribute('data-processed', 'true');
-                }
-            }
-        }
-        
-        // 全てのスライドにアニメーションクラスを追加
-        function addAnimationClasses() {
-            const sections = document.querySelectorAll('.reveal .slides section');
-            sections.forEach(section => {
-                if (!section.classList.contains('title-slide')) {
-                    section.classList.add('animate-on-load');
-                }
-            });
-        }
-        
-        // Reveal.jsのイベント
-        Reveal.on('ready', () => {
-            addAnimationClasses();
-            setTimeout(renderMermaid, 800);
-        });
-        
-        Reveal.on('slidechanged', () => {
-            // スライド変更時に処理済みマークをリセット（必要に応じて）
-            const currentSlide = Reveal.getCurrentSlide();
-            const mermaidInSlide = currentSlide.querySelectorAll('.mermaid[data-processed]');
-            mermaidInSlide.forEach(el => {
-                if (!el.innerHTML || el.innerHTML.trim() === '') {
-                    el.removeAttribute('data-processed');
-                }
-            });
-            setTimeout(renderMermaid, 800);
-        });
-        
-        // 初期レンダリング（複数回試行）
-        setTimeout(renderMermaid, 1000);
-        setTimeout(renderMermaid, 2000);
-        setTimeout(renderMermaid, 3000);
     </script>
 </body>
 </html>
