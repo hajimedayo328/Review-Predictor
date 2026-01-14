@@ -404,7 +404,7 @@ npm run dev
 
 ### 動作確認
 
-1. http://localhost:3000/input にアクセス
+1. http://localhost:3002/input にアクセス
 2. 以下のサンプル説明文を入力:
    ```
    高級イタリアンレザーを使用した職人手作りの財布。
