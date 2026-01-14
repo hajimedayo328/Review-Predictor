@@ -32,9 +32,9 @@
 
 ### デモ動画
 
-https://github.com/user-attachments/assets/（ここに動画IDを貼り付け）
+[![デモ動画](https://img.youtube.com/vi/8Q20Kx7mK9c/maxresdefault.jpg)](https://youtu.be/8Q20Kx7mK9c)
 
-*※ 動画をアップロード後、URLを貼り付けてください*
+https://youtu.be/8Q20Kx7mK9c
 
 ---
 

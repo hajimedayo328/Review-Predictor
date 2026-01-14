@@ -13,103 +13,47 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;500;700;800&family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
 
         :root {
             --primary-blue: #3b82f6;
-            --primary-blue-dark: #2563eb;
             --accent-green: #10b981;
-            --accent-yellow: #f59e0b;
-            --bg-white: #ffffff;
-            --bg-gray: #f8fafc;
             --text-primary: #1e293b;
             --text-secondary: #64748b;
         }
 
         .reveal {
-            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            font-family: 'M PLUS Rounded 1c', 'Zen Maru Gothic', sans-serif;
             background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
         }
 
         .reveal .slides section {
             text-align: left;
-            padding: 3rem 4rem;
+            padding: 2rem 3rem;
         }
 
         .reveal h1 {
-            font-size: 3.5rem;
+            font-size: 4.5rem;
             font-weight: 800;
             background: linear-gradient(135deg, var(--primary-blue), #8b5cf6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
 
         .reveal h2 {
-            font-size: 2.5rem;
+            font-size: 3.2rem;
             font-weight: 700;
             color: var(--text-primary);
             margin-bottom: 1.5rem;
-            border-bottom: 3px solid var(--primary-blue);
+            border-bottom: 5px solid var(--primary-blue);
             padding-bottom: 0.5rem;
         }
 
-        .reveal h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--primary-blue);
-        }
-
         .reveal p, .reveal li {
-            font-size: 1.2rem;
+            font-size: 1.8rem;
             line-height: 1.8;
             color: var(--text-secondary);
-        }
-
-        .reveal ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .reveal ul li::before {
-            content: "→";
-            color: var(--primary-blue);
-            font-weight: bold;
-            margin-right: 0.5rem;
-        }
-
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            border: 1px solid #e2e8f0;
-        }
-
-        .highlight-box {
-            background: linear-gradient(135deg, #eff6ff, #f0fdf4);
-            border-left: 4px solid var(--primary-blue);
-            padding: 1rem 1.5rem;
-            margin: 1rem 0;
-            border-radius: 0 8px 8px 0;
-        }
-
-        .stat-box {
-            background: var(--primary-blue);
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .stat-box .number {
-            font-size: 2.5rem;
-            font-weight: 800;
-        }
-
-        .stat-box .label {
-            font-size: 0.9rem;
-            opacity: 0.9;
         }
 
         .team-badge {
@@ -121,55 +65,140 @@
             display: inline-block;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
         }
 
-        th, td {
-            padding: 0.75rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
+        .stat-box {
+            background: var(--primary-blue);
+            color: white;
+            padding: 2rem 2.5rem;
+            border-radius: 16px;
+            text-align: center;
         }
 
-        th {
-            background: #f8fafc;
-            font-weight: 600;
-            color: var(--text-primary);
+        .stat-box .number {
+            font-size: 4rem;
+            font-weight: 800;
+        }
+
+        .stat-box .label {
+            font-size: 1.5rem;
+            opacity: 0.9;
+        }
+
+        /* ER図のスタイル */
+        .er-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .er-table {
+            background: white;
+            border: 3px solid var(--primary-blue);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .er-table-header {
+            background: var(--primary-blue);
+            color: white;
+            padding: 1rem 1.25rem;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .er-table-body {
+            padding: 1rem 1.25rem;
+        }
+
+        .er-field {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.4rem 0;
+            font-size: 1.2rem;
+        }
+
+        .er-field-name { font-weight: 600; color: #1e293b; }
+        .er-field-type { color: #64748b; font-family: monospace; }
+        .er-pk { color: #f59e0b; }
+        .er-fk { color: #10b981; }
+        .er-vector { color: #8b5cf6; }
+
+        /* 矢印 */
+        .relation-arrow {
+            font-size: 2rem;
+            color: var(--primary-blue);
+            text-align: center;
+        }
+
+        /* アーキテクチャ図 */
+        .arch-box {
+            background: white;
+            border: 3px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 1.75rem;
+            text-align: center;
+        }
+
+        .arch-box-primary {
+            background: linear-gradient(135deg, #eff6ff, #f0fdf4);
+            border: 4px solid var(--primary-blue);
+        }
+
+        .arch-box h4 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .arch-box p {
+            font-size: 1.4rem;
+            color: #64748b;
+            margin: 0;
+        }
+
+        .flow-arrow {
+            font-size: 3.5rem;
+            color: var(--primary-blue);
         }
 
         .code-block {
             background: #1e293b;
             color: #e2e8f0;
-            padding: 1rem;
-            border-radius: 8px;
+            padding: 1.75rem;
+            border-radius: 16px;
             font-family: 'Fira Code', monospace;
-            font-size: 0.9rem;
-            overflow-x: auto;
+            font-size: 1.4rem;
         }
 
         .code-block .keyword { color: #c084fc; }
         .code-block .string { color: #86efac; }
         .code-block .comment { color: #64748b; }
 
-        .flow-arrow {
-            font-size: 2rem;
-            color: var(--primary-blue);
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
 
-        .persona-card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.25rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border: 1px solid #e2e8f0;
+        th, td {
+            padding: 1.25rem 1.5rem;
+            text-align: left;
+            border-bottom: 3px solid #e2e8f0;
+            font-size: 1.5rem;
         }
 
-        .persona-card h4 {
-            color: var(--primary-blue);
+        th {
+            background: #f8fafc;
             font-weight: 700;
-            margin-bottom: 0.5rem;
+            color: var(--text-primary);
         }
     </style>
 </head>
@@ -177,437 +206,573 @@
     <div class="reveal">
         <div class="slides">
 
-            <!-- スライド1: タイトル -->
+            <!-- スライド1: タイトル + メンバー -->
             <section>
                 <div class="text-center">
-                    <div class="team-badge mb-8">チーム おでん</div>
+                    <div class="team-badge mb-6">チーム おでん</div>
                     <h1 class="text-center">Review Predictor</h1>
-                    <p class="text-2xl text-gray-600 mt-4">
-                        新商品の説明文から、10,000人の仮想顧客が<br>
-                        どう評価するかを予測するシミュレーションツール
+                    <p class="text-2xl text-gray-600 mt-4 mb-8">
+                        商品説明文から10,000人の仮想顧客の評価を予測
                     </p>
-                    <div class="mt-12 text-gray-500">
-                        データベース 最終課題
-                    </div>
-                </div>
-            </section>
-
-            <!-- スライド2: メンバー紹介 -->
-            <section>
-                <h2>メンバー</h2>
-                <div class="grid grid-cols-2 gap-6 mt-8">
-                    <div class="card">
-                        <p class="text-gray-500 text-sm">2442001</p>
-                        <p class="text-xl font-bold text-gray-800">赤塩 甫</p>
-                    </div>
-                    <div class="card">
-                        <p class="text-gray-500 text-sm">2442003</p>
-                        <p class="text-xl font-bold text-gray-800">阿部 純太</p>
-                    </div>
-                    <div class="card">
-                        <p class="text-gray-500 text-sm">2442040</p>
-                        <p class="text-xl font-bold text-gray-800">シャリフ 大睦</p>
-                    </div>
-                    <div class="card">
-                        <p class="text-gray-500 text-sm">2442071</p>
-                        <p class="text-xl font-bold text-gray-800">服田 愛樹</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- スライド3: 解決したい課題 -->
-            <section>
-                <h2>解決したい課題</h2>
-                <div class="highlight-box text-xl">
-                    ECサイトで新商品を出品する際、<br>
-                    <strong class="text-2xl">「この商品は売れるのか？」</strong> という不安
-                </div>
-                <ul class="mt-8 space-y-4">
-                    <li>レビューがない新商品は購入されにくい</li>
-                    <li>実際に売り出すまで顧客の反応がわからない</li>
-                    <li>商品説明文の書き方で売上が大きく変わる</li>
-                </ul>
-            </section>
-
-            <!-- スライド4: 本システムのアプローチ -->
-            <section>
-                <h2>本システムのアプローチ</h2>
-                <div class="highlight-box text-xl mb-8">
-                    <strong>「売る前に、顧客の反応を予測できたら？」</strong>
-                </div>
-                <div class="flex items-center justify-center gap-4 text-lg">
-                    <div class="card text-center px-6">商品説明文</div>
-                    <span class="flow-arrow">→</span>
-                    <div class="card text-center px-6">ベクトル化</div>
-                    <span class="flow-arrow">→</span>
-                    <div class="card text-center px-6">10,000人と<br>類似度計算</div>
-                    <span class="flow-arrow">→</span>
-                    <div class="card text-center px-6">評価予測</div>
-                    <span class="flow-arrow">→</span>
-                    <div class="card text-center px-6">統計表示</div>
-                </div>
-            </section>
-
-            <!-- スライド5: ペルソナ -->
-            <section>
-                <h2>ターゲットユーザー（ペルソナ）</h2>
-                <div class="grid grid-cols-3 gap-4 mt-6">
-                    <div class="persona-card">
-                        <h4>田中 美咲（32歳）</h4>
-                        <p class="text-sm text-gray-600">ハンドメイド作家</p>
-                        <p class="text-sm mt-2"><strong>悩み:</strong> 新作のレビューがつくまで売れない</p>
-                    </div>
-                    <div class="persona-card">
-                        <h4>鈴木 健太（28歳）</h4>
-                        <p class="text-sm text-gray-600">D2Cマーケター</p>
-                        <p class="text-sm mt-2"><strong>悩み:</strong> A/Bテストに時間がかかる</p>
-                    </div>
-                    <div class="persona-card">
-                        <h4>山田 太郎（45歳）</h4>
-                        <p class="text-sm text-gray-600">商品企画部長</p>
-                        <p class="text-sm mt-2"><strong>悩み:</strong> 売れる根拠を示せない</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- スライド6: システムアーキテクチャ -->
-            <section>
-                <h2>システムアーキテクチャ</h2>
-                <div class="grid grid-cols-3 gap-6 mt-6">
-                    <div class="card">
-                        <h3 class="text-lg mb-2">フロントエンド</h3>
-                        <ul class="text-sm space-y-1">
-                            <li>Next.js 14</li>
-                            <li>React + TypeScript</li>
-                            <li>Tailwind CSS</li>
-                            <li>Recharts</li>
-                        </ul>
-                    </div>
-                    <div class="card">
-                        <h3 class="text-lg mb-2">バックエンド</h3>
-                        <ul class="text-sm space-y-1">
-                            <li>Next.js API Routes</li>
-                            <li>Prisma ORM</li>
-                            <li>transformers.js</li>
-                        </ul>
-                    </div>
-                    <div class="card">
-                        <h3 class="text-lg mb-2">データベース</h3>
-                        <ul class="text-sm space-y-1">
-                            <li>PostgreSQL 15</li>
-                            <li>pgvector拡張</li>
-                            <li>HNSWインデックス</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <!-- スライド7: なぜPostgreSQL + pgvectorか -->
-            <section>
-                <h2>技術選定の理由</h2>
-                <h3 class="mb-4">なぜ PostgreSQL + pgvector か？</h3>
-                <table>
-                    <tr>
-                        <th>選択肢</th>
-                        <th>検討結果</th>
-                    </tr>
-                    <tr>
-                        <td><strong class="text-green-600">PostgreSQL + pgvector ✓</strong></td>
-                        <td>RDB機能とベクトル検索を1つのDBで実現</td>
-                    </tr>
-                    <tr>
-                        <td>MySQL</td>
-                        <td>ベクトル検索の拡張がない</td>
-                    </tr>
-                    <tr>
-                        <td>MongoDB</td>
-                        <td>JOINが苦手、正規化の利点が活かせない</td>
-                    </tr>
-                    <tr>
-                        <td>専用VectorDB</td>
-                        <td>RDBと別管理、データ同期が複雑</td>
-                    </tr>
-                </table>
-            </section>
-
-            <!-- スライド8: データベース設計 -->
-            <section>
-                <h2>データベース設計（ER図）</h2>
-                <div class="grid grid-cols-2 gap-8 mt-4">
-                    <div>
-                        <h3 class="mb-4">7テーブル構成</h3>
-                        <table class="text-sm">
-                            <tr><th>テーブル</th><th>レコード数</th></tr>
-                            <tr><td>sellers</td><td>1</td></tr>
-                            <tr><td>categories</td><td>5</td></tr>
-                            <tr><td>products</td><td>シミュレーション数</td></tr>
-                            <tr><td>segments</td><td>4</td></tr>
-                            <tr><td>customers</td><td class="font-bold text-blue-600">10,000</td></tr>
-                            <tr><td>simulations</td><td>実行数</td></tr>
-                            <tr><td>predicted_reviews</td><td>実行数 × 10,000</td></tr>
-                        </table>
-                    </div>
-                    <div>
-                        <h3 class="mb-4">リレーション</h3>
-                        <div class="code-block text-xs">
-Seller ||--o{ Product<br>
-Category ||--o{ Product<br>
-Segment ||--o{ Customer<br>
-Product ||--o{ Simulation<br>
-Simulation ||--o{ PredictedReview<br>
-Customer ||--o{ PredictedReview
+                    <div class="flex justify-center gap-8 mt-8">
+                        <div class="text-center">
+                            <p class="text-gray-500 text-sm">2442001</p>
+                            <p class="text-lg font-bold">赤塩 甫</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-gray-500 text-sm">2442003</p>
+                            <p class="text-lg font-bold">阿部 純太</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-gray-500 text-sm">2442040</p>
+                            <p class="text-lg font-bold">シャリフ 大睦</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-gray-500 text-sm">2442071</p>
+                            <p class="text-lg font-bold">服田 愛樹</p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- スライド9: 正規化 -->
+            <!-- スライド2: システム概要（図解） -->
             <section>
-                <h2>正規化（第3正規形）</h2>
-                <div class="highlight-box mb-6">
-                    全7テーブルが<strong>第3正規形（3NF）</strong>を満たしている
+                <h2>システム概要</h2>
+                <div class="flex items-center justify-between gap-4 mt-8">
+                    <div class="arch-box flex-1">
+                        <h4>📝 商品説明文</h4>
+                        <p>入力</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="arch-box-primary arch-box flex-1">
+                        <h4>🔄 ベクトル化</h4>
+                        <p>384次元</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="arch-box-primary arch-box flex-1">
+                        <h4>🔍 類似度検索</h4>
+                        <p>pgvector</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="arch-box flex-1">
+                        <h4>⭐ 評価予測</h4>
+                        <p>1〜5点</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="arch-box flex-1">
+                        <h4>📊 結果表示</h4>
+                        <p>統計・グラフ</p>
+                    </div>
                 </div>
-                <div class="grid grid-cols-2 gap-8">
+                <div class="grid grid-cols-3 gap-6 mt-10">
+                    <div class="stat-box">
+                        <div class="number">10,000</div>
+                        <div class="label">仮想顧客数</div>
+                    </div>
+                    <div class="stat-box" style="background: #10b981;">
+                        <div class="number">~5秒</div>
+                        <div class="label">シミュレーション時間</div>
+                    </div>
+                    <div class="stat-box" style="background: #8b5cf6;">
+                        <div class="number">384</div>
+                        <div class="label">ベクトル次元数</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- スライド3: アーキテクチャ -->
+            <section>
+                <h2>システムアーキテクチャ</h2>
+                <div class="flex items-center justify-center gap-6 mt-8">
+                    <!-- フロントエンド層 -->
+                    <div class="arch-box-primary arch-box text-center flex-1" style="max-width: 400px;">
+                        <h4 class="text-2xl font-bold text-blue-600 mb-3">🌐 フロントエンド</h4>
+                        <div class="space-y-2 text-sm">
+                            <div>
+                                <p class="font-semibold text-base mb-1">フレームワーク</p>
+                                <p>Next.js 14</p>
+                                <p>React</p>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-base mb-1">言語</p>
+                                <p><strong>TypeScript</strong></p>
+                                <p>CSS</p>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-base mb-1">ライブラリ</p>
+                                <p>Tailwind CSS</p>
+                                <p>Recharts</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 矢印 -->
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="flow-arrow text-4xl">→</div>
+                        <p class="text-xs text-gray-500 mt-1">HTTP Request</p>
+                    </div>
+                    
+                    <!-- バックエンド層 -->
+                    <div class="arch-box-primary arch-box text-center flex-1" style="max-width: 400px;">
+                        <h4 class="text-2xl font-bold text-green-600 mb-3">⚙️ バックエンド</h4>
+                        <div class="space-y-2 text-sm">
+                            <div>
+                                <p class="font-semibold text-base mb-1">API</p>
+                                <p>Next.js API Routes</p>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-base mb-1">言語</p>
+                                <p><strong>TypeScript</strong></p>
+                                <p>JavaScript</p>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-base mb-1">ツール</p>
+                                <p>Prisma ORM</p>
+                                <p>transformers.js</p>
+                                <p class="text-xs text-gray-500">(ローカル)</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 矢印 -->
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="flow-arrow text-4xl">→</div>
+                        <p class="text-xs text-gray-500 mt-1">SQL Query</p>
+                    </div>
+                    
+                    <!-- データベース層 -->
+                    <div class="arch-box-primary arch-box text-center flex-1" style="max-width: 400px;">
+                        <h4 class="text-2xl font-bold text-purple-600 mb-3">🗄️ データベース</h4>
+                        <div class="space-y-2 text-sm">
+                            <div>
+                                <p class="font-semibold text-base mb-1">DBMS</p>
+                                <p><strong>PostgreSQL 15</strong></p>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-base mb-1">言語</p>
+                                <p><strong>SQL</strong></p>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-base mb-1">拡張機能</p>
+                                <p>pgvector</p>
+                                <p>HNSWインデックス</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 text-center">
+                    <div class="inline-block bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 rounded-xl px-6 py-3">
+                        <p class="text-lg"><strong>ポイント:</strong> RDB機能 + ベクトル検索を<strong class="text-blue-600">1つのDB</strong>で実現</p>
+                        <p class="text-sm text-gray-600 mt-1">外部API不要（transformers.jsでローカル処理）</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- スライド4: ER図 -->
+            <section>
+                <h2>ER図（7テーブル構成）</h2>
+                <div style="position: relative; width: 100%; height: 580px; margin-top: 0.5rem;">
+                    <!-- SVGでリレーション線を描画 -->
+                    <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;">
+                        <!-- 矢印マーカー定義 -->
+                        <defs>
+                            <marker id="arrowhead" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto">
+                                <polygon points="0 0, 12 4, 0 8" fill="#3b82f6"/>
+                            </marker>
+                            <marker id="arrowhead-green" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto">
+                                <polygon points="0 0, 12 4, 0 8" fill="#10b981"/>
+                            </marker>
+                            <marker id="arrowhead-yellow" markerWidth="12" markerHeight="8" refX="10" refY="4" orient="auto">
+                                <polygon points="0 0, 12 4, 0 8" fill="#f59e0b"/>
+                            </marker>
+                        </defs>
+                        <!-- sellers → products -->
+                        <path d="M 320 55 L 480 100" stroke="#3b82f6" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+                        <!-- categories → products -->
+                        <path d="M 320 165 L 480 150" stroke="#3b82f6" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+                        <!-- segments → customers -->
+                        <path d="M 320 285 C 500 285, 900 50, 1100 100" stroke="#10b981" stroke-width="3" fill="none" marker-end="url(#arrowhead-green)"/>
+                        <!-- products → simulations -->
+                        <path d="M 680 200 L 680 290" stroke="#3b82f6" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+                        <!-- simulations → predicted_reviews -->
+                        <path d="M 880 380 L 1100 380" stroke="#f59e0b" stroke-width="3" fill="none" marker-end="url(#arrowhead-yellow)"/>
+                        <!-- customers → predicted_reviews -->
+                        <path d="M 1300 260 L 1300 320" stroke="#f59e0b" stroke-width="3" fill="none" marker-end="url(#arrowhead-yellow)"/>
+                    </svg>
+
+                    <!-- テーブル: sellers -->
+                    <div style="position: absolute; left: 80px; top: 20px; width: 240px; z-index: 20;" class="er-table">
+                        <div class="er-table-header">🏪 sellers</div>
+                        <div class="er-table-body">
+                            <div class="er-field"><span class="er-field-name er-pk">🔑 id</span></div>
+                            <div class="er-field"><span class="er-field-name">name</span></div>
+                        </div>
+                    </div>
+
+                    <!-- テーブル: categories -->
+                    <div style="position: absolute; left: 80px; top: 130px; width: 240px; z-index: 20;" class="er-table">
+                        <div class="er-table-header">📁 categories</div>
+                        <div class="er-table-body">
+                            <div class="er-field"><span class="er-field-name er-pk">🔑 id</span></div>
+                            <div class="er-field"><span class="er-field-name">name</span></div>
+                        </div>
+                    </div>
+
+                    <!-- テーブル: segments -->
+                    <div style="position: absolute; left: 80px; top: 250px; width: 240px; z-index: 20; border-color: #10b981;" class="er-table">
+                        <div class="er-table-header" style="background: #10b981;">👥 segments</div>
+                        <div class="er-table-body">
+                            <div class="er-field"><span class="er-field-name er-pk">🔑 id</span></div>
+                            <div class="er-field"><span class="er-field-name">name</span></div>
+                        </div>
+                    </div>
+
+                    <!-- テーブル: products -->
+                    <div style="position: absolute; left: 480px; top: 50px; width: 400px; z-index: 20;" class="er-table">
+                        <div class="er-table-header">📦 products</div>
+                        <div class="er-table-body">
+                            <div class="er-field"><span class="er-field-name er-pk">🔑 id</span></div>
+                            <div class="er-field"><span class="er-field-name">name, description</span></div>
+                            <div class="er-field"><span class="er-field-name er-vector">📊 embedding</span><span class="er-field-type">vector(384)</span></div>
+                            <div class="er-field"><span class="er-field-name er-fk">🔗 sellerId, categoryId</span></div>
+                        </div>
+                    </div>
+
+                    <!-- テーブル: simulations -->
+                    <div style="position: absolute; left: 480px; top: 300px; width: 400px; z-index: 20;" class="er-table">
+                        <div class="er-table-header">🔬 simulations</div>
+                        <div class="er-table-body">
+                            <div class="er-field"><span class="er-field-name er-pk">🔑 id</span></div>
+                            <div class="er-field"><span class="er-field-name er-fk">🔗 productId</span></div>
+                            <div class="er-field"><span class="er-field-name">status, avgRating</span></div>
+                        </div>
+                    </div>
+
+                    <!-- テーブル: customers -->
+                    <div style="position: absolute; left: 1100px; top: 50px; width: 400px; z-index: 20; border-color: #10b981;" class="er-table">
+                        <div class="er-table-header" style="background: #10b981;">👤 customers（10,000件）</div>
+                        <div class="er-table-body">
+                            <div class="er-field"><span class="er-field-name er-pk">🔑 id</span></div>
+                            <div class="er-field"><span class="er-field-name">name</span></div>
+                            <div class="er-field"><span class="er-field-name er-fk">🔗 segmentId</span></div>
+                            <div class="er-field"><span class="er-field-name er-vector">📊 preferenceVector</span><span class="er-field-type">vector(384)</span></div>
+                            <div class="er-field"><span class="er-field-name er-vector">📊 profileVector</span><span class="er-field-type">vector(5)</span></div>
+                        </div>
+                    </div>
+
+                    <!-- テーブル: predicted_reviews -->
+                    <div style="position: absolute; left: 1100px; top: 330px; width: 400px; z-index: 20; border-color: #f59e0b;" class="er-table">
+                        <div class="er-table-header" style="background: #f59e0b;">⭐ predicted_reviews</div>
+                        <div class="er-table-body">
+                            <div class="er-field"><span class="er-field-name er-pk">🔑 id</span></div>
+                            <div class="er-field"><span class="er-field-name er-fk">🔗 simulationId, customerId</span></div>
+                            <div class="er-field"><span class="er-field-name">rating (1〜5), reviewText</span></div>
+                            <div class="er-field"><span class="er-field-name">similarity</span></div>
+                        </div>
+                    </div>
+
+                    <!-- 注釈 -->
+                    <div style="position: absolute; left: 80px; bottom: 20px; z-index: 20;" class="p-3 bg-amber-50 rounded-xl border-2 border-amber-200">
+                        <p class="text-base font-bold text-amber-700">💡 1シミュレーション = 10,000レコード生成</p>
+                    </div>
+                </div>
+                <div class="flex justify-center gap-10 mt-1 text-lg">
+                    <span><span class="er-pk">🔑</span> 主キー</span>
+                    <span><span class="er-fk">🔗</span> 外部キー</span>
+                    <span><span class="er-vector">📊</span> ベクトル型</span>
+                    <span style="color: #3b82f6;">━━→ リレーション</span>
+                </div>
+            </section>
+
+            <!-- スライド5: ベクトル検索 -->
+            <section>
+                <h2>ベクトル類似度検索（pgvector）</h2>
+                <div class="grid grid-cols-2 gap-8 mt-6">
                     <div>
-                        <h3 class="mb-2">正規化の確認</h3>
-                        <table class="text-sm">
+                        <h3 class="text-xl font-bold text-blue-600 mb-4">コサイン類似度検索</h3>
+                        <div class="code-block">
+<span class="keyword">SELECT</span> c.id,<br>
+&nbsp;&nbsp;(1 - (c."preferenceVector" <span class="string"><=></span> $1))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">AS</span> similarity<br>
+<span class="keyword">FROM</span> customers c<br>
+<span class="keyword">ORDER BY</span> c."preferenceVector" <span class="string"><=></span> $1<br>
+<span class="keyword">LIMIT</span> 10000;
+                        </div>
+                        <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+                            <p class="text-lg"><code class="bg-white px-2 py-1 rounded">&lt;=&gt;</code> = コサイン距離演算子</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-green-600 mb-4">HNSWインデックス</h3>
+                        <div class="code-block">
+<span class="keyword">CREATE INDEX</span> ON customers<br>
+<span class="keyword">USING</span> hnsw ("preferenceVector"<br>
+&nbsp;&nbsp;vector_cosine_ops)<br>
+<span class="keyword">WITH</span> (m = 16, ef_construction = 64);
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mt-4">
+                            <div class="stat-box">
+                                <div class="number">O(log n)</div>
+                                <div class="label">計算量</div>
+                            </div>
+                            <div class="stat-box" style="background: #10b981;">
+                                <div class="number">~10ms</div>
+                                <div class="label">検索時間</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- スライド6: 評価予測アルゴリズム -->
+            <section>
+                <h2>評価予測アルゴリズム</h2>
+                <div class="grid grid-cols-2 gap-8 mt-4">
+                    <div>
+                        <h3 class="text-xl font-bold text-blue-600 mb-4">5次元プロファイルベクトル</h3>
+                        <div class="space-y-3">
+                            <div style="background: linear-gradient(135deg, #fef3c7, #fde68a); border-left: 5px solid #f59e0b; border-radius: 12px; padding: 1rem;">
+                                <p class="font-bold text-xl text-amber-700">💰 価格敏感度</p>
+                                <p class="text-lg text-amber-600">高いと中間評価になりやすい</p>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #dbeafe, #bfdbfe); border-left: 5px solid #3b82f6; border-radius: 12px; padding: 1rem;">
+                                <p class="font-bold text-xl text-blue-700">✨ 品質重視度</p>
+                                <p class="text-lg text-blue-600">類似度が高いと高評価</p>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #fce7f3, #fbcfe8); border-left: 5px solid #ec4899; border-radius: 12px; padding: 1rem;">
+                                <p class="font-bold text-xl text-pink-700">🎨 デザイン重視度</p>
+                                <p class="text-lg text-pink-600">中間評価になりやすい</p>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #ede9fe, #ddd6fe); border-left: 5px solid #8b5cf6; border-radius: 12px; padding: 1rem;">
+                                <p class="font-bold text-xl text-purple-700">👑 ブランドロイヤリティ</p>
+                                <p class="text-lg text-purple-600">類似度が高いと+0.5加算</p>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #fee2e2, #fecaca); border-left: 5px solid #ef4444; border-radius: 12px; padding: 1rem;">
+                                <p class="font-bold text-xl text-red-700">📝 レビュー厳しさ</p>
+                                <p class="text-lg text-red-600">高いと-0.5、低いと+0.3</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-green-600 mb-4">評価計算式</h3>
+                        <div class="code-block" style="font-size: 1.2rem;">
+<span class="comment">// 基本スコア = 類似度 × 5</span><br>
+baseScore = <span class="string">similarity</span> × 5<br><br>
+
+<span class="comment">// プロファイルによる調整</span><br>
+<span class="keyword">if</span> (similarity > 0.7 && quality > 0.7)<br>
+&nbsp;&nbsp;baseScore += <span class="string">0.8</span> <span class="comment">// 品質重視</span><br><br>
+
+<span class="keyword">if</span> (similarity > 0.6 && brand > 0.7)<br>
+&nbsp;&nbsp;baseScore += <span class="string">0.5</span> <span class="comment">// ブランド</span><br><br>
+
+<span class="keyword">if</span> (price > 0.7 && similarity中程度)<br>
+&nbsp;&nbsp;baseScore -= <span class="string">0.5</span> <span class="comment">// 価格敏感</span><br><br>
+
+<span class="keyword">if</span> (reviewStrictness > 0.7)<br>
+&nbsp;&nbsp;baseScore -= <span class="string">0.5</span> <span class="comment">// 厳しい</span><br><br>
+
+<span class="comment">// 最終評価 = 1〜5に丸める</span><br>
+rating = <span class="keyword">round</span>(baseScore)
+                        </div>
+                        <div class="mt-4 p-4 bg-green-50 rounded-lg border-2 border-green-200">
+                            <p class="text-lg text-green-700"><strong>ポイント:</strong> 類似度だけでなく顧客特性で評価が変動</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- スライド7: トランザクションと正規化 -->
+            <section>
+                <h2>トランザクション & 正規化</h2>
+                <div class="grid grid-cols-2 gap-8 mt-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-blue-600 mb-4">ACID保証</h3>
+                        <div class="code-block text-base">
+<span class="keyword">await</span> prisma.<span class="keyword">$transaction</span>(<span class="keyword">async</span> (tx) => {<br>
+&nbsp;&nbsp;<span class="comment">// 1. 商品を作成</span><br>
+&nbsp;&nbsp;<span class="keyword">await</span> tx.$executeRawUnsafe(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">`INSERT INTO products ...`</span>);<br><br>
+&nbsp;&nbsp;<span class="comment">// 2. シミュレーションを作成</span><br>
+&nbsp;&nbsp;<span class="keyword">await</span> tx.simulation.create({...});<br><br>
+&nbsp;&nbsp;<span class="comment">// → 失敗時は両方ロールバック</span><br>
+});
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-green-600 mb-4">第3正規形（3NF）</h3>
+                        <table class="text-base">
                             <tr><th>テーブル</th><th>1NF</th><th>2NF</th><th>3NF</th></tr>
                             <tr><td>sellers</td><td>✓</td><td>✓</td><td>✓</td></tr>
                             <tr><td>categories</td><td>✓</td><td>✓</td><td>✓</td></tr>
                             <tr><td>products</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                            <tr><td>segments</td><td>✓</td><td>✓</td><td>✓</td></tr>
                             <tr><td>customers</td><td>✓</td><td>✓</td><td>✓</td></tr>
                             <tr><td>simulations</td><td>✓</td><td>✓</td><td>✓</td></tr>
                             <tr><td>predicted_reviews</td><td>✓</td><td>✓</td><td>✓</td></tr>
                         </table>
                     </div>
-                    <div>
-                        <h3 class="mb-2">ポイント</h3>
-                        <ul class="text-sm space-y-2">
-                            <li>ベクトル型はpgvectorで原子的に扱う</li>
-                            <li>外部キーで推移的従属を排除</li>
-                            <li>avgRating等は計算キャッシュ</li>
-                        </ul>
-                    </div>
                 </div>
             </section>
 
-            <!-- スライド10: 外部キー制約 -->
-            <section>
-                <h2>外部キー制約</h2>
-                <div class="code-block mb-6">
-<span class="comment">-- prisma/schema.prisma より</span><br><br>
-<span class="keyword">model</span> PredictedReview {<br>
-&nbsp;&nbsp;simulation Simulation <span class="keyword">@relation</span>(<span class="string">onDelete: Cascade</span>)<br>
-&nbsp;&nbsp;<span class="comment">// → シミュレーション削除時に予測レビューも自動削除</span><br>
-}
-                </div>
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="card">
-                        <h3 class="text-lg mb-2">CASCADE DELETE</h3>
-                        <p class="text-sm text-gray-600">
-                            シミュレーションを削除すると、<br>
-                            紐づく10,000件のレビューも自動削除
-                        </p>
-                    </div>
-                    <div class="card">
-                        <h3 class="text-lg mb-2">参照整合性</h3>
-                        <p class="text-sm text-gray-600">
-                            存在しない商品・顧客への<br>
-                            レビュー作成を防止
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- スライド11: トランザクション -->
-            <section>
-                <h2>トランザクション（原子性）</h2>
-                <div class="code-block text-sm mb-6">
-<span class="comment">// 商品とシミュレーションを1つのトランザクションで作成</span><br>
-<span class="keyword">const</span> result = <span class="keyword">await</span> prisma.<span class="keyword">$transaction</span>(<span class="keyword">async</span> (tx) => {<br>
-&nbsp;&nbsp;<span class="comment">// 1. 商品を作成</span><br>
-&nbsp;&nbsp;<span class="keyword">await</span> tx.$executeRawUnsafe(<span class="string">`INSERT INTO products ...`</span>);<br><br>
-&nbsp;&nbsp;<span class="comment">// 2. シミュレーションを作成</span><br>
-&nbsp;&nbsp;<span class="keyword">const</span> simulation = <span class="keyword">await</span> tx.simulation.create({...});<br><br>
-&nbsp;&nbsp;<span class="keyword">return</span> { productId, simulationId };<br>
-});<br>
-<span class="comment">// → どちらかが失敗したら両方ロールバック</span>
-                </div>
-            </section>
-
-            <!-- スライド12: ベクトル検索 -->
-            <section>
-                <h2>ベクトル類似度検索（pgvector）</h2>
-                <div class="code-block text-sm mb-6">
-<span class="comment">-- コサイン距離演算子 <=> を使用</span><br>
-<span class="keyword">SELECT</span><br>
-&nbsp;&nbsp;c.id,<br>
-&nbsp;&nbsp;(1 - (c."preferenceVector" <span class="string"><=></span> $1::vector(384))) <span class="keyword">as</span> similarity<br>
-<span class="keyword">FROM</span> customers c<br>
-<span class="keyword">ORDER BY</span> c."preferenceVector" <span class="string"><=></span> $1::vector(384)<br>
-<span class="keyword">LIMIT</span> 10000;
-                </div>
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="stat-box">
-                        <div class="number">O(log n)</div>
-                        <div class="label">HNSWインデックスの計算量</div>
-                    </div>
-                    <div class="stat-box" style="background: #10b981;">
-                        <div class="number">~10ms</div>
-                        <div class="label">10,000件の検索時間</div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- スライド13: パフォーマンス最適化 -->
+            <!-- スライド7: パフォーマンス -->
             <section>
                 <h2>パフォーマンス最適化</h2>
-                <h3 class="mb-4">バッチINSERT</h3>
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="card" style="border-left: 4px solid #ef4444;">
-                        <h4 class="text-red-500 font-bold mb-2">❌ 悪い例</h4>
-                        <p class="text-sm">1件ずつINSERT<br>→ 10,000回のINSERT</p>
+                <div class="grid grid-cols-2 gap-8 mt-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-blue-600 mb-4">バッチINSERT</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="card" style="border-left: 4px solid #ef4444;">
+                                <h4 class="text-red-500 font-bold text-lg mb-2">❌ 悪い例</h4>
+                                <p class="text-base">1件ずつINSERT</p>
+                                <p class="text-2xl font-bold text-red-500 mt-2">10,000回</p>
+                            </div>
+                            <div class="card" style="border-left: 4px solid #10b981;">
+                                <h4 class="text-green-500 font-bold text-lg mb-2">✓ 採用</h4>
+                                <p class="text-base">1,000件ずつ</p>
+                                <p class="text-2xl font-bold text-green-500 mt-2">10回</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card" style="border-left: 4px solid #10b981;">
-                        <h4 class="text-green-500 font-bold mb-2">✓ 採用した方法</h4>
-                        <p class="text-sm">1,000件ずつバッチ<br>→ 10回のINSERT</p>
+                    <div>
+                        <h3 class="text-xl font-bold text-green-600 mb-4">実測結果</h3>
+                        <table>
+                            <tr><th>処理</th><th>目標</th><th>実測</th></tr>
+                            <tr><td>ベクトル検索</td><td>&lt; 100ms</td><td class="text-green-600 font-bold">~13ms</td></tr>
+                            <tr><td>評価予測</td><td>&lt; 500ms</td><td class="text-green-600 font-bold">~200ms</td></tr>
+                            <tr><td>バッチINSERT</td><td>&lt; 5000ms</td><td class="text-green-600 font-bold">~3000ms</td></tr>
+                            <tr><td class="font-bold">合計</td><td>&lt; 10秒</td><td class="text-green-600 font-bold text-xl">~5秒</td></tr>
+                        </table>
                     </div>
                 </div>
-                <table class="mt-6 text-sm">
-                    <tr><th>処理</th><th>目標</th><th>実測</th></tr>
-                    <tr><td>ベクトル検索</td><td>< 100ms</td><td class="text-green-600">~13ms</td></tr>
-                    <tr><td>バッチINSERT</td><td>< 5000ms</td><td class="text-green-600">~3000ms</td></tr>
-                    <tr><td>合計</td><td>< 10秒</td><td class="text-green-600 font-bold">~5秒</td></tr>
-                </table>
             </section>
 
-            <!-- スライド14: 授業要件対応 -->
+            <!-- スライド8: 授業要件 -->
             <section>
                 <h2>授業要件への対応</h2>
-                <table class="text-sm">
-                    <tr><th>授業回</th><th>テーマ</th><th>本システムでの実装</th></tr>
+                <table class="mt-4">
+                    <tr><th style="width: 15%;">授業回</th><th style="width: 25%;">テーマ</th><th>本システムでの実装</th></tr>
                     <tr><td>#2</td><td>Disk and File</td><td>pgvectorのHNSWインデックス</td></tr>
                     <tr><td>#3</td><td>RDB Table</td><td>7テーブルの正規化設計</td></tr>
                     <tr><td>#4</td><td>SQL, Transaction</td><td>シミュレーション実行のACID保証</td></tr>
-                    <tr><td>#5</td><td>FK, JOIN, SubQuery</td><td>セグメント別集計の複合クエリ</td></tr>
-                    <tr><td>#8</td><td>正規化, DB Tuning</td><td>第3正規形 + EXPLAIN ANALYZE</td></tr>
-                    <tr><td>#10</td><td>分散DB</td><td>Read Replicaアーキテクチャ設計</td></tr>
-                    <tr><td>#11</td><td>Vector DB</td><td><strong>pgvectorによるベクトル類似度検索</strong></td></tr>
+                    <tr><td>#5</td><td>FK, JOIN</td><td>セグメント別集計の複合クエリ</td></tr>
+                    <tr><td>#8</td><td>正規化, Tuning</td><td>第3正規形 + EXPLAIN ANALYZE</td></tr>
+                    <tr><td>#11</td><td><strong>Vector DB</strong></td><td><strong class="text-blue-600">pgvectorによるベクトル類似度検索</strong></td></tr>
                 </table>
             </section>
 
-            <!-- スライド15: デモ -->
+            <!-- スライド9: デモ -->
             <section>
                 <h2>デモンストレーション</h2>
                 <div class="text-center mt-12">
-                    <div class="stat-box inline-block px-12 py-8">
-                        <div class="number">DEMO</div>
-                        <div class="label">実際にシミュレーションを実行します</div>
+                    <div class="stat-box inline-block px-16 py-10" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6);">
+                        <div class="number" style="font-size: 4rem;">DEMO</div>
+                        <div class="label text-xl mt-2">実際にシミュレーションを実行</div>
                     </div>
                 </div>
-                <div class="mt-12 text-center">
-                    <p class="text-gray-600">
-                        1. 商品説明文を入力<br>
-                        2. シミュレーション実行<br>
-                        3. 結果画面で評価分布・セグメント分析を確認
-                    </p>
+                <div class="flex justify-center gap-8 mt-12">
+                    <div class="arch-box px-8">
+                        <h4>1. 入力</h4>
+                        <p>商品説明文</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="arch-box px-8">
+                        <h4>2. 実行</h4>
+                        <p>~5秒</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="arch-box px-8">
+                        <h4>3. 結果</h4>
+                        <p>評価分布・分析</p>
+                    </div>
                 </div>
             </section>
 
-            <!-- スライド16: AI活用 -->
+            <!-- スライド10: 拡張性・将来性 -->
             <section>
-                <h2>AI（Claude Code）の活用</h2>
-                <div class="grid grid-cols-2 gap-6 mt-6">
+                <h2>拡張性・将来性</h2>
+                <div class="grid grid-cols-2 gap-12 mt-6">
+                    <!-- 機能拡張 -->
                     <div>
-                        <h3 class="mb-4">AIが担当</h3>
-                        <ul class="space-y-2 text-sm">
-                            <li>スキーマ設計のレビュー</li>
-                            <li>コード実装の補助</li>
-                            <li>ドキュメント作成</li>
-                            <li>デバッグ支援</li>
-                        </ul>
+                        <div class="flex items-center gap-3 mb-6">
+                            <div style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <span style="font-size: 1.5rem;">🚀</span>
+                            </div>
+                            <h3 class="text-2xl font-bold" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">機能拡張</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div style="background: linear-gradient(135deg, #eff6ff, #e0e7ff); border-left: 5px solid #3b82f6; border-radius: 12px; padding: 1.25rem;">
+                                <p class="font-bold text-xl text-blue-700">🎯 A/Bテスト機能</p>
+                                <p class="text-lg text-blue-600 mt-1">複数の説明文を比較シミュレーション</p>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #f5f3ff, #ede9fe); border-left: 5px solid #8b5cf6; border-radius: 12px; padding: 1.25rem;">
+                                <p class="font-bold text-xl text-purple-700">📈 時系列分析</p>
+                                <p class="text-lg text-purple-600 mt-1">過去のシミュレーション結果との比較</p>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #fdf4ff, #fae8ff); border-left: 5px solid #d946ef; border-radius: 12px; padding: 1.25rem;">
+                                <p class="font-bold text-xl text-fuchsia-700">🤖 AI改善提案</p>
+                                <p class="text-lg text-fuchsia-600 mt-1">評価を上げる説明文の自動提案</p>
+                            </div>
+                        </div>
                     </div>
+                    <!-- スケーラビリティ -->
                     <div>
-                        <h3 class="mb-4">人間が判断</h3>
-                        <ul class="space-y-2 text-sm">
-                            <li>ペルソナ設計</li>
-                            <li>評価予測アルゴリズム</li>
-                            <li>UI/UXデザイン</li>
-                            <li>技術選定</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="highlight-box mt-8">
-                    <strong>学び:</strong> AIは効率化ツール。設計の意思決定は人間が行う。
-                </div>
-            </section>
-
-            <!-- スライド17: 開発プロセス -->
-            <section>
-                <h2>開発プロセス</h2>
-                <div class="grid grid-cols-5 gap-4 mt-8">
-                    <div class="card text-center">
-                        <div class="text-2xl font-bold text-blue-600">1日</div>
-                        <div class="text-sm text-gray-600 mt-2">企画・設計</div>
-                    </div>
-                    <div class="card text-center">
-                        <div class="text-2xl font-bold text-blue-600">1日</div>
-                        <div class="text-sm text-gray-600 mt-2">DB設計</div>
-                    </div>
-                    <div class="card text-center">
-                        <div class="text-2xl font-bold text-blue-600">2日</div>
-                        <div class="text-sm text-gray-600 mt-2">バックエンド</div>
-                    </div>
-                    <div class="card text-center">
-                        <div class="text-2xl font-bold text-blue-600">1日</div>
-                        <div class="text-sm text-gray-600 mt-2">フロント</div>
-                    </div>
-                    <div class="card text-center">
-                        <div class="text-2xl font-bold text-blue-600">1日</div>
-                        <div class="text-sm text-gray-600 mt-2">テスト</div>
-                    </div>
-                </div>
-                <div class="text-center mt-8">
-                    <div class="stat-box inline-block px-8">
-                        <div class="number">約1週間</div>
-                        <div class="label">総開発期間</div>
+                        <div class="flex items-center gap-3 mb-6">
+                            <div style="background: linear-gradient(135deg, #10b981, #14b8a6); width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <span style="font-size: 1.5rem;">⚡</span>
+                            </div>
+                            <h3 class="text-2xl font-bold" style="background: linear-gradient(135deg, #10b981, #14b8a6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">スケーラビリティ</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div style="background: linear-gradient(135deg, #ecfdf5, #d1fae5); border-left: 5px solid #10b981; border-radius: 12px; padding: 1.25rem;">
+                                <p class="font-bold text-xl text-emerald-700">👥 顧客数拡大</p>
+                                <p class="text-lg text-emerald-600 mt-1">10,000 → <strong>100,000人</strong>対応（~30秒）</p>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border-left: 5px solid #14b8a6; border-radius: 12px; padding: 1.25rem;">
+                                <p class="font-bold text-xl text-teal-700">🔄 Read Replica</p>
+                                <p class="text-lg text-teal-600 mt-1">読み取り負荷の分散</p>
+                            </div>
+                            <div style="background: linear-gradient(135deg, #ecfeff, #cffafe); border-left: 5px solid #06b6d4; border-radius: 12px; padding: 1.25rem;">
+                                <p class="font-bold text-xl text-cyan-700">📦 ジョブキュー</p>
+                                <p class="text-lg text-cyan-600 mt-1">非同期処理で同時実行対応</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- スライド18: まとめ -->
-            <section>
-                <h2>まとめ</h2>
-                <div class="grid grid-cols-2 gap-6 mt-6">
-                    <div class="card">
-                        <h3 class="text-lg mb-4">実装したこと</h3>
-                        <ul class="text-sm space-y-2">
-                            <li>10,000人の仮想顧客シミュレーション</li>
-                            <li>pgvectorによるベクトル類似度検索</li>
-                            <li>第3正規形のDB設計</li>
-                            <li>トランザクションによるACID保証</li>
-                        </ul>
-                    </div>
-                    <div class="card">
-                        <h3 class="text-lg mb-4">学んだこと</h3>
-                        <ul class="text-sm space-y-2">
-                            <li>RDBとベクトルDBの融合</li>
-                            <li>正規化の実践的な適用</li>
-                            <li>パフォーマンス最適化</li>
-                            <li>AIとの協働開発</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <!-- スライド19: ありがとうございました -->
+            <!-- スライド11: ありがとうございました -->
             <section>
                 <div class="text-center">
                     <h1 class="text-center">ご清聴ありがとうございました</h1>
-                    <div class="mt-12">
-                        <div class="team-badge">チーム おでん</div>
+                    <div class="grid grid-cols-4 gap-6 mt-8 text-left">
+                        <div class="card">
+                            <h4 class="text-lg font-bold text-blue-600 mb-2">🗄️ DB設計</h4>
+                            <p class="text-base">7テーブル / 3NF</p>
+                        </div>
+                        <div class="card">
+                            <h4 class="text-lg font-bold text-green-600 mb-2">🔍 ベクトル検索</h4>
+                            <p class="text-base">pgvector / HNSW</p>
+                        </div>
+                        <div class="card">
+                            <h4 class="text-lg font-bold text-purple-600 mb-2">⚡ パフォーマンス</h4>
+                            <p class="text-base">~5秒 / 10,000件</p>
+                        </div>
+                        <div class="card">
+                            <h4 class="text-lg font-bold text-amber-600 mb-2">🔒 トランザクション</h4>
+                            <p class="text-base">ACID / CASCADE</p>
+                        </div>
                     </div>
-                    <p class="text-gray-500 mt-8">
+                    <div class="mt-8 p-4 bg-gray-100 rounded-xl inline-block">
+                        <p class="text-lg text-gray-600 mb-2">ソースコード</p>
+                        <p class="text-xl font-mono font-bold text-blue-600">
+                            https://github.com/akashio-oden/review-predictor
+                        </p>
+                    </div>
+                    <div class="mt-6">
+                        <div class="team-badge text-xl px-8 py-3">チーム おでん</div>
+                    </div>
+                    <p class="text-gray-500 mt-4 text-xl">
                         質問をお待ちしております
                     </p>
                 </div>
@@ -623,9 +788,9 @@ Customer ||--o{ PredictedReview
             hash: true,
             slideNumber: true,
             transition: 'slide',
-            width: 1280,
-            height: 720,
-            margin: 0.1,
+            width: 1920,  // 16:9 アスペクト比
+            height: 1080, // 16:9 アスペクト比
+            margin: 0.05,
         });
     </script>
 </body>

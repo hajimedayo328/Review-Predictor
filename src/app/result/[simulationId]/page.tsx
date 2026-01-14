@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   BarChart,
@@ -77,10 +77,36 @@ const SEGMENT_LABELS: Record<string, string> = {
 
 export default function ResultPage() {
   const params = useParams();
+  const router = useRouter();
   const simulationId = params.simulationId as string;
   const [result, setResult] = useState<SimulationResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    if (!confirm('このシミュレーション結果を削除しますか？\nこの操作は取り消せません。')) {
+      return;
+    }
+
+    setDeleting(true);
+    try {
+      const response = await fetch(`/api/simulations/${simulationId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || '削除に失敗しました');
+      }
+
+      alert('シミュレーション結果を削除しました');
+      router.push('/input');
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '削除に失敗しました');
+      setDeleting(false);
+    }
+  };
 
   useEffect(() => {
     const fetchResult = async () => {
@@ -384,6 +410,13 @@ export default function ResultPage() {
           >
             新しいシミュレーション
           </Link>
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            className="px-6 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors disabled:bg-red-400 disabled:cursor-not-allowed"
+          >
+            {deleting ? '削除中...' : 'この結果を削除'}
+          </button>
         </div>
       </div>
     </div>
