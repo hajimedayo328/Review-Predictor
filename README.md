@@ -24,12 +24,6 @@
 
 ## デモ
 
-### システム概要図
-
-![システム概要図](docs/images/system-overview.png)
-
-*※ 画像がない場合は下記のMermaid図を参照*
-
 ### デモ動画
 
 [![デモ動画](https://img.youtube.com/vi/8Q20Kx7mK9c/maxresdefault.jpg)](https://youtu.be/8Q20Kx7mK9c)
